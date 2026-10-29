@@ -1,0 +1,63 @@
+/**
+ * SwiftGLB Admin Dropzone & File Handling
+ * 
+ * @package SwiftGLB
+ */
+
+.swiftglb-file {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px;
+	padding: 14px 16px;
+	border: 1.5px dashed #c3c4c7;
+	border-radius: var(--swiftglb-admin-radius-md, 10px);
+	background: #ffffff;
+	transition: var(--swiftglb-admin-transition);
+}
+
+.swiftglb-file.is-drag {
+	border-color: var(--swiftglb-admin-primary, #2271b1);
+	background: var(--swiftglb-admin-primary-light, #f0f6fc);
+	box-shadow: 0 0 0 2px var(--swiftglb-admin-primary-border, #c5d8ea);
+}
+
+.swiftglb-file-name {
+	font-size: 13px;
+	color: #2c3338;
+	font-weight: 500;
+	direction: ltr;
+	display: inline-block;
+}
+
+.swiftglb-file-error {
+	flex-basis: 100%;
+	color: var(--swiftglb-admin-error, #b32d2e);
+	font-size: 12px;
+	margin-top: 4px;
+	font-weight: 500;
+}
+
+.swiftglb-upload-btn {
+	font-weight: 600;
+}
+
+.swiftglb-preview-btn {
+	color: var(--swiftglb-admin-primary, #2271b1);
+	border-color: var(--swiftglb-admin-primary-border, #c5d8ea);
+}
+
+.swiftglb-preview-btn:hover {
+	color: var(--swiftglb-admin-primary-hover, #135e96);
+	background: var(--swiftglb-admin-primary-light, #f0f6fc);
+}
+
+.swiftglb-remove-btn {
+	color: var(--swiftglb-admin-error, #b32d2e);
+}
+
+.swiftglb-remove-btn:hover {
+	background: #fcf0f0;
+	color: #8c1e1e;
+	border-color: #e5b3b3;
+}

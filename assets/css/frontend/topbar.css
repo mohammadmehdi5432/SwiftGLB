@@ -1,0 +1,191 @@
+/**
+ * SwiftGLB Frontend Topbar & Toolbar Controls
+ * 
+ * @package SwiftGLB
+ */
+
+.swiftglb-topbar {
+	position: absolute;
+	top: max(16px, env(safe-area-inset-top));
+	left: 16px;
+	right: 16px;
+	z-index: var(--swiftglb-z-topbar, 10);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	pointer-events: none;
+}
+
+.swiftglb-close {
+	width: 42px;
+	height: 42px;
+	border: 0;
+	border-radius: var(--swiftglb-radius-pill, 9999px);
+	background: var(--swiftglb-surface-light);
+	color: var(--swiftglb-text-light);
+	font-size: 26px;
+	line-height: 1;
+	cursor: pointer;
+	box-shadow: var(--swiftglb-shadow-light);
+	pointer-events: auto;
+	backdrop-filter: blur(18px);
+	-webkit-backdrop-filter: blur(18px);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	transition: all var(--swiftglb-duration-fast) var(--swiftglb-ease-out);
+}
+
+.swiftglb-close:hover {
+	background: var(--swiftglb-surface-solid-light);
+	transform: scale(1.06);
+}
+
+.swiftglb-modal[data-scene="dark"] .swiftglb-close {
+	background: var(--swiftglb-surface-dark);
+	color: var(--swiftglb-text-dark);
+	box-shadow: var(--swiftglb-shadow-dark);
+}
+
+.swiftglb-modal[data-scene="dark"] .swiftglb-close:hover {
+	background: rgba(45, 49, 58, 0.95);
+}
+
+.swiftglb-toolbar {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	pointer-events: auto;
+}
+
+.swiftglb-tool-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 42px;
+	height: 42px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: var(--swiftglb-radius-pill, 9999px);
+	background: var(--swiftglb-surface-light);
+	color: var(--swiftglb-text-muted-light);
+	cursor: pointer;
+	box-shadow: var(--swiftglb-shadow-light);
+	backdrop-filter: blur(18px);
+	-webkit-backdrop-filter: blur(18px);
+	transition: all var(--swiftglb-duration-fast) var(--swiftglb-ease-out);
+}
+
+.swiftglb-tool-btn:hover {
+	background: var(--swiftglb-surface-solid-light);
+	color: var(--swiftglb-text-light);
+	transform: scale(1.06);
+}
+
+.swiftglb-tool-btn.is-on {
+	background: var(--swiftglb-text-light);
+	color: #ffffff;
+}
+
+.swiftglb-modal[data-scene="dark"] .swiftglb-tool-btn {
+	background: var(--swiftglb-surface-dark);
+	color: var(--swiftglb-text-muted-dark);
+	box-shadow: var(--swiftglb-shadow-dark);
+}
+
+.swiftglb-modal[data-scene="dark"] .swiftglb-tool-btn:hover {
+	background: rgba(45, 49, 58, 0.95);
+	color: #ffffff;
+}
+
+.swiftglb-modal[data-scene="dark"] .swiftglb-tool-btn.is-on {
+	background: #ffffff;
+	color: #121418;
+}
+
+/* Day/Night Scene Switcher */
+.swiftglb-switch {
+	display: inline-flex;
+	align-items: center;
+	padding: 3px;
+	border-radius: var(--swiftglb-radius-pill, 9999px);
+	background: var(--swiftglb-surface-light);
+	box-shadow: var(--swiftglb-shadow-light);
+	backdrop-filter: blur(18px);
+	-webkit-backdrop-filter: blur(18px);
+}
+
+.swiftglb-switch button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	border: 0;
+	border-radius: var(--swiftglb-radius-pill, 9999px);
+	background: transparent;
+	color: var(--swiftglb-text-muted-light);
+	cursor: pointer;
+	transition: all var(--swiftglb-duration-fast) var(--swiftglb-ease-out);
+}
+
+.swiftglb-switch button.is-on {
+	background: var(--swiftglb-surface-solid-light);
+	color: var(--swiftglb-text-light);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.swiftglb-modal[data-scene="dark"] .swiftglb-switch {
+	background: var(--swiftglb-surface-dark);
+	box-shadow: var(--swiftglb-shadow-dark);
+}
+
+.swiftglb-modal[data-scene="dark"] .swiftglb-switch button {
+	color: var(--swiftglb-text-muted-dark);
+}
+
+.swiftglb-modal[data-scene="dark"] .swiftglb-switch button.is-on {
+	background: rgba(45, 49, 58, 0.95);
+	color: #ffffff;
+}
+
+/* HD Quality Switcher Button */
+.swiftglb-tool-hd {
+	font-weight: 800;
+	font-size: 11px;
+	letter-spacing: 0.5px;
+	font-family: system-ui, -apple-system, sans-serif;
+}
+
+.swiftglb-hd-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 2px 5px;
+	border-radius: 4px;
+	border: 1.5px solid currentColor;
+	line-height: 1;
+	font-weight: 800;
+	transition: var(--swiftglb-transition);
+}
+
+.swiftglb-tool-hd.is-active {
+	background: var(--swiftglb-primary, #2563eb) !important;
+	color: #ffffff !important;
+	box-shadow: 0 4px 14px var(--swiftglb-primary-glow, rgba(37, 99, 235, 0.45));
+}
+
+.swiftglb-tool-hd.is-active .swiftglb-hd-tag {
+	border-color: #ffffff;
+	background: rgba(255, 255, 255, 0.2);
+}
+
+.swiftglb-tool-hd.is-loading .swiftglb-hd-tag {
+	animation: swiftglbPulse 1s infinite alternate;
+}
+
+@keyframes swiftglbPulse {
+	from { opacity: 0.4; }
+	to { opacity: 1; }
+}

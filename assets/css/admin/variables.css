@@ -1,0 +1,33 @@
+/**
+ * SwiftGLB Admin Design Tokens & Variables
+ * 
+ * @package SwiftGLB
+ */
+
+:root {
+	--swiftglb-admin-primary: #2271b1;
+	--swiftglb-admin-primary-hover: #135e96;
+	--swiftglb-admin-primary-light: #f0f6fc;
+	--swiftglb-admin-primary-border: #c5d8ea;
+
+	--swiftglb-admin-sd-bg: #e7f5ea;
+	--swiftglb-admin-sd-text: #1b6d2e;
+	--swiftglb-admin-sd-border: #c3e6cb;
+
+	--swiftglb-admin-hd-bg: #eef5fc;
+	--swiftglb-admin-hd-text: #135e96;
+	--swiftglb-admin-hd-border: #c5d8ea;
+
+	--swiftglb-admin-card-bg: #ffffff;
+	--swiftglb-admin-card-border: #dcdcde;
+	--swiftglb-admin-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+
+	--swiftglb-admin-radius-sm: 6px;
+	--swiftglb-admin-radius-md: 10px;
+	--swiftglb-admin-radius-lg: 14px;
+	--swiftglb-admin-radius-pill: 9999px;
+
+	--swiftglb-admin-error: #b32d2e;
+	--swiftglb-admin-text-subtle: #646970;
+	--swiftglb-admin-transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}

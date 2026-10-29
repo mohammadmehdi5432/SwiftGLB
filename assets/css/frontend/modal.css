@@ -1,0 +1,65 @@
+/**
+ * SwiftGLB Frontend Modal & Stage Layout
+ * 
+ * @package SwiftGLB
+ */
+
+html.swiftglb-open,
+html.swiftglb-open body {
+	overflow: hidden !important;
+	overscroll-behavior: none !important;
+}
+
+.swiftglb-modal {
+	position: fixed;
+	inset: 0;
+	z-index: var(--swiftglb-z-modal, 100000);
+	display: block;
+	direction: ltr !important;
+	text-align: left;
+	overscroll-behavior: none;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.swiftglb-modal[hidden] {
+	display: none !important;
+}
+
+.swiftglb-modal__panel {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	background: var(--swiftglb-bg-light);
+	color: var(--swiftglb-text-light);
+	direction: ltr !important;
+	transition: background-color var(--swiftglb-duration-normal) var(--swiftglb-ease-out),
+	            color var(--swiftglb-duration-normal) var(--swiftglb-ease-out);
+}
+
+.swiftglb-modal[data-scene="dark"] .swiftglb-modal__panel {
+	background: var(--swiftglb-bg-dark);
+	color: var(--swiftglb-text-dark);
+}
+
+.swiftglb-stage {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.swiftglb-stage__viewer {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.swiftglb-stage__viewer model-viewer {
+	width: 100%;
+	height: 100%;
+	outline: none;
+	--poster-color: transparent;
+}

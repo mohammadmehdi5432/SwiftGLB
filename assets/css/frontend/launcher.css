@@ -1,0 +1,94 @@
+/**
+ * SwiftGLB Frontend Launcher & Product Gallery Integration
+ * 
+ * @package SwiftGLB
+ */
+
+.swiftglb-gallery-host {
+	position: relative;
+}
+
+.swiftglb-launcher--suppressed {
+	display: none !important;
+}
+
+.swiftglb-launcher--wait:not(.is-mounted) {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+}
+
+.swiftglb-launcher.is-mounted {
+	position: absolute;
+	z-index: var(--swiftglb-z-launcher, 6);
+	inset-inline-start: 14px;
+	bottom: 14px;
+	width: max-content;
+	max-width: calc(100% - 28px);
+	pointer-events: none;
+}
+
+.swiftglb-launcher--inline {
+	margin: 14px 0;
+}
+
+.swiftglb-pill {
+	display: inline-flex;
+	align-items: center;
+	max-width: 100%;
+	margin: 0;
+	padding: 9px 18px;
+	border: 1px solid var(--swiftglb-border-light);
+	border-radius: var(--swiftglb-radius-pill, 9999px);
+	background: var(--swiftglb-surface-light);
+	color: var(--swiftglb-text-light);
+	box-shadow: var(--swiftglb-shadow-light);
+	font: inherit;
+	font-size: 13.5px;
+	font-weight: 650;
+	line-height: 1.2;
+	letter-spacing: 0;
+	cursor: pointer;
+	pointer-events: auto;
+	backdrop-filter: blur(18px);
+	-webkit-backdrop-filter: blur(18px);
+	-webkit-tap-highlight-color: transparent;
+	transition: all var(--swiftglb-duration-normal) var(--swiftglb-ease-out);
+}
+
+.swiftglb-pill__icon {
+	display: inline-flex;
+	align-items: center;
+	margin-inline-end: 8px;
+	flex-shrink: 0;
+	color: inherit;
+	transition: transform 0.4s var(--swiftglb-ease-spring);
+}
+
+.swiftglb-pill__text {
+	display: block;
+	white-space: nowrap;
+}
+
+.swiftglb-pill:hover,
+.swiftglb-pill:focus-visible {
+	background: var(--swiftglb-surface-solid-light);
+	box-shadow: var(--swiftglb-shadow-lg-light);
+	transform: translateY(-2px);
+}
+
+.swiftglb-pill:hover .swiftglb-pill__icon {
+	transform: rotate(20deg) scale(1.15);
+}
+
+.swiftglb-pill:focus-visible,
+.swiftglb-close:focus-visible,
+.swiftglb-tool-btn:focus-visible,
+.swiftglb-switch button:focus-visible,
+.swiftglb-retry:focus-visible,
+.swiftglb-pop__ok:focus-visible {
+	outline: 2px solid var(--swiftglb-text-light);
+	outline-offset: 2px;
+}

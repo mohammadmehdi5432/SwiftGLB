@@ -1,0 +1,13 @@
+/**
+ * SwiftGLB Master Admin Stylesheet
+ * Architecture: Component-Based Modular CSS
+ * 
+ * @package SwiftGLB
+ */
+
+@import "admin/variables.css";
+@import "admin/layout.css";
+@import "admin/dropzone.css";
+@import "admin/quality-grid.css";
+@import "admin/upload-progress.css";
+@import "admin/preview-modal.css";

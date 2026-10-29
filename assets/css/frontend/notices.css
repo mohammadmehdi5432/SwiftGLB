@@ -1,0 +1,104 @@
+/**
+ * SwiftGLB Frontend Notices & Error Dialogs
+ * 
+ * @package SwiftGLB
+ */
+
+.swiftglb-pop {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: var(--swiftglb-z-pop, 20);
+	width: min(380px, 90vw);
+	padding: 24px;
+	border-radius: var(--swiftglb-radius-lg, 20px);
+	background: var(--swiftglb-surface-solid-light, #ffffff);
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+	text-align: center;
+	direction: rtl !important;
+	animation: swiftglbCardPop 0.28s var(--swiftglb-ease-spring);
+}
+
+.swiftglb-pop[hidden] {
+	display: none !important;
+}
+
+.swiftglb-modal[data-scene="dark"] .swiftglb-pop {
+	background: var(--swiftglb-surface-dark);
+	color: var(--swiftglb-text-dark);
+	border: 1px solid var(--swiftglb-border-dark);
+}
+
+.swiftglb-pop__title {
+	margin: 0 0 8px;
+	font-size: 16px;
+	font-weight: 700;
+	color: var(--swiftglb-text-light);
+}
+
+.swiftglb-modal[data-scene="dark"] .swiftglb-pop__title {
+	color: var(--swiftglb-text-dark);
+}
+
+.swiftglb-pop__text {
+	margin: 0 0 20px;
+	font-size: 13px;
+	line-height: 1.6;
+	color: var(--swiftglb-text-muted-light);
+}
+
+.swiftglb-modal[data-scene="dark"] .swiftglb-pop__text {
+	color: var(--swiftglb-text-muted-dark);
+}
+
+.swiftglb-pop__actions {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+}
+
+.swiftglb-retry,
+.swiftglb-pop__ok {
+	padding: 9px 20px;
+	border-radius: var(--swiftglb-radius-pill, 9999px);
+	font: inherit;
+	font-size: 13px;
+	font-weight: 650;
+	cursor: pointer;
+	border: 0;
+	transition: all var(--swiftglb-duration-fast) var(--swiftglb-ease-out);
+}
+
+.swiftglb-retry {
+	background: var(--swiftglb-primary, #2563eb);
+	color: #ffffff;
+}
+
+.swiftglb-retry:hover {
+	background: var(--swiftglb-primary-hover, #1d4ed8);
+	transform: translateY(-1px);
+}
+
+.swiftglb-retry[hidden] {
+	display: none !important;
+}
+
+.swiftglb-pop__ok {
+	background: rgba(0, 0, 0, 0.07);
+	color: var(--swiftglb-text-light);
+}
+
+.swiftglb-pop__ok:hover {
+	background: rgba(0, 0, 0, 0.12);
+}
+
+.swiftglb-modal[data-scene="dark"] .swiftglb-pop__ok {
+	background: rgba(255, 255, 255, 0.12);
+	color: var(--swiftglb-text-dark);
+}
+
+.swiftglb-modal[data-scene="dark"] .swiftglb-pop__ok:hover {
+	background: rgba(255, 255, 255, 0.2);
+}

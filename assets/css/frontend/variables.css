@@ -1,0 +1,56 @@
+/**
+ * SwiftGLB Frontend Design Tokens & Variables
+ * 
+ * @package SwiftGLB
+ */
+
+:root {
+	/* Light Mode Tokens */
+	--swiftglb-bg-light: #f4f4f2;
+	--swiftglb-surface-light: rgba(255, 255, 255, 0.92);
+	--swiftglb-surface-solid-light: #ffffff;
+	--swiftglb-text-light: #1c1d21;
+	--swiftglb-text-muted-light: #4a505b;
+	--swiftglb-border-light: rgba(255, 255, 255, 0.65);
+	--swiftglb-shadow-light: 0 4px 18px rgba(0, 0, 0, 0.08);
+	--swiftglb-shadow-lg-light: 0 12px 36px rgba(0, 0, 0, 0.12);
+
+	/* Dark Mode Tokens */
+	--swiftglb-bg-dark: #0c0e12;
+	--swiftglb-surface-dark: rgba(28, 31, 38, 0.92);
+	--swiftglb-surface-solid-dark: #121418;
+	--swiftglb-text-dark: #f5f6f8;
+	--swiftglb-text-muted-dark: #b7bdc7;
+	--swiftglb-border-dark: rgba(255, 255, 255, 0.12);
+	--swiftglb-shadow-dark: 0 4px 22px rgba(0, 0, 0, 0.45);
+	--swiftglb-shadow-lg-dark: 0 16px 44px rgba(0, 0, 0, 0.6);
+
+	/* Primary & Accent Accents */
+	--swiftglb-primary: #2563eb;
+	--swiftglb-primary-hover: #1d4ed8;
+	--swiftglb-primary-light: #eff6ff;
+	--swiftglb-primary-glow: rgba(37, 99, 235, 0.35);
+
+	/* Quality Badges */
+	--swiftglb-hd-color: #2563eb;
+	--swiftglb-sd-color: #10b981;
+
+	/* Motion & Transitions */
+	--swiftglb-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+	--swiftglb-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+	--swiftglb-duration-fast: 0.18s;
+	--swiftglb-duration-normal: 0.28s;
+
+	/* Radii */
+	--swiftglb-radius-sm: 8px;
+	--swiftglb-radius-md: 14px;
+	--swiftglb-radius-lg: 20px;
+	--swiftglb-radius-pill: 9999px;
+
+	/* Z-Indexes */
+	--swiftglb-z-launcher: 6;
+	--swiftglb-z-modal: 100000;
+	--swiftglb-z-topbar: 10;
+	--swiftglb-z-pop: 20;
+	--swiftglb-z-qr: 30;
+}

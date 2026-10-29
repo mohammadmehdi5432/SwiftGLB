@@ -1,0 +1,103 @@
+/**
+ * SwiftGLB Admin 3D Live Preview Modal
+ * 
+ * @package SwiftGLB
+ */
+
+.swiftglb-admin-modal {
+	position: fixed;
+	inset: 0;
+	z-index: 100000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.swiftglb-admin-modal[hidden] {
+	display: none !important;
+}
+
+.swiftglb-admin-modal__backdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.72);
+	backdrop-filter: blur(6px);
+	-webkit-backdrop-filter: blur(6px);
+}
+
+.swiftglb-admin-modal__box {
+	position: relative;
+	z-index: 2;
+	width: min(760px, 92vw);
+	height: min(620px, 86vh);
+	background: #ffffff;
+	border-radius: var(--swiftglb-admin-radius-lg, 14px);
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	box-shadow: 0 24px 70px rgba(0, 0, 0, 0.4);
+	animation: swiftglbModalIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes swiftglbModalIn {
+	from {
+		opacity: 0;
+		transform: scale(0.96) translateY(10px);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1) translateY(0);
+	}
+}
+
+.swiftglb-admin-modal__head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 14px 20px;
+	border-bottom: 1px solid #e2e4e7;
+	background: #f8f9fa;
+	direction: rtl !important;
+}
+
+.swiftglb-admin-modal__head h3 {
+	margin: 0;
+	font-size: 15px;
+	font-weight: 650;
+	color: #1d2327;
+}
+
+.swiftglb-admin-modal__close {
+	background: transparent;
+	border: none;
+	font-size: 24px;
+	line-height: 1;
+	cursor: pointer;
+	color: var(--swiftglb-admin-text-subtle, #646970);
+	padding: 0 6px;
+	border-radius: var(--swiftglb-admin-radius-sm, 4px);
+	transition: var(--swiftglb-admin-transition);
+}
+
+.swiftglb-admin-modal__close:hover {
+	color: var(--swiftglb-admin-error, #b32d2e);
+	background: #f0f0f1;
+}
+
+.swiftglb-admin-modal__body {
+	flex: 1;
+	position: relative;
+	background: #f0f0f1;
+}
+
+.swiftglb-admin-modal__loader {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--swiftglb-admin-text-subtle, #646970);
+	font-size: 14px;
+	direction: rtl !important;
+	font-weight: 500;
+}

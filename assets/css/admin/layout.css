@@ -1,0 +1,72 @@
+/**
+ * SwiftGLB Admin General Layout & Form Fields
+ * 
+ * @package SwiftGLB
+ */
+
+#woocommerce-product-data ul.wc-tabs li.swiftglb_options a::before {
+	content: "\f531";
+}
+
+.swiftglb-fields,
+.swiftglb-variation {
+	padding: 14px 18px 8px;
+}
+
+.swiftglb-lead,
+.swiftglb-note {
+	margin: 0 0 12px;
+	color: var(--swiftglb-admin-text-subtle, #646970);
+	font-size: 12px;
+	line-height: 1.6;
+}
+
+.swiftglb-label {
+	margin: 14px 0 6px;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.swiftglb-check {
+	display: flex;
+	align-items: flex-start;
+	gap: 8px;
+	margin: 0 0 10px;
+}
+
+.swiftglb-check input[type="checkbox"] {
+	margin-top: 2px;
+	border-radius: var(--swiftglb-admin-radius-sm, 4px);
+}
+
+.swiftglb-tint {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 12px;
+}
+
+.swiftglb-tint .swiftglb-check {
+	flex: 1;
+	margin: 0;
+}
+
+.swiftglb-tint input[type="color"] {
+	padding: 0;
+	width: 44px;
+	height: 30px;
+	border: 1px solid #c3c4c7;
+	border-radius: var(--swiftglb-admin-radius-sm, 6px);
+	cursor: pointer;
+	background: none;
+}
+
+.swiftglb-shortcode {
+	width: min(280px, 100%);
+	font-family: Consolas, Monaco, monospace;
+	font-size: 12px;
+	background: #f6f7f7;
+	border: 1px solid #c3c4c7;
+	border-radius: var(--swiftglb-admin-radius-sm, 4px);
+	padding: 4px 8px;
+}
