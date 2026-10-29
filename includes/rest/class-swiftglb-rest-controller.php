@@ -63,17 +63,17 @@ class SwiftGLB_REST_Controller {
 	public function serve_rest_model( WP_REST_Request $request ) {
 		$token = (string) $request->get_param( 'token' );
 		if ( ! $this->storage->is_valid_token( $token ) || ! $this->storage->exists( $token ) ) {
-			return new WP_Error( 'swiftglb_missing', __( 'Model not found.', 'swiftglb' ), array( 'status' => 404 ) );
+			return new WP_Error( 'swiftglb_missing', __( 'Model not found.', 'swiftglb-3d-ar-product-viewer' ), array( 'status' => 404 ) );
 		}
 
 		$ids = $this->ids_from_request( $request );
 		if ( ! $this->is_authorized( $request, $token, $ids['product_id'], $ids['variation_id'] ) ) {
-			return new WP_Error( 'swiftglb_forbidden', __( 'You are not allowed to access this model.', 'swiftglb' ), array( 'status' => 403 ) );
+			return new WP_Error( 'swiftglb_forbidden', __( 'You are not allowed to access this model.', 'swiftglb-3d-ar-product-viewer' ), array( 'status' => 403 ) );
 		}
 
 		$meta = $this->storage->inspect( $token );
 		if ( is_wp_error( $meta ) ) {
-			return new WP_Error( 'swiftglb_corrupt', __( 'The model could not be read.', 'swiftglb' ), array( 'status' => 500 ) );
+			return new WP_Error( 'swiftglb_corrupt', __( 'The model could not be read.', 'swiftglb-3d-ar-product-viewer' ), array( 'status' => 500 ) );
 		}
 
 		$this->stream_model( $token, $meta, $ids['product_id'], $ids['variation_id'] );

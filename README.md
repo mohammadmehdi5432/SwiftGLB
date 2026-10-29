@@ -2,7 +2,7 @@
 
 WordPress plugin that shows WooCommerce products as interactive 3D models with augmented reality. The viewer and the model download only after a shopper clicks.
 
-The source language is English. Strings use the `swiftglb` text domain, so WordPress.org can ship translations for each site language automatically.
+The source language is English. Strings use the `swiftglb-3d-ar-product-viewer` text domain, so WordPress.org can ship translations for each site language automatically.
 
 ## Requirements
 
@@ -22,7 +22,7 @@ The source language is English. Strings use the `swiftglb` text domain, so WordP
 
 On WordPress.org, choose the site language under **Settings → General**. Language packs are installed for this text domain when translators publish them.
 
-From GitHub, translate `swiftglb` with Loco Translate or any gettext tool. Put compiled files in `languages/` as `swiftglb-{locale}.mo`.
+From GitHub, translate `swiftglb-3d-ar-product-viewer` with Loco Translate or any gettext tool. Put compiled files in `languages/` as `swiftglb-3d-ar-product-viewer-{locale}.mo`.
 
 ## License
 

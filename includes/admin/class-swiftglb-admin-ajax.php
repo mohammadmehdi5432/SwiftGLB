@@ -33,11 +33,11 @@ class SwiftGLB_Admin_Ajax {
 		check_ajax_referer( 'swiftglb_upload', 'nonce' );
 		add_filter( 'wp_check_filetype_and_ext', array( 'SwiftGLB_Plugin', 'filetype' ), 10, 4 );
 		if ( ! current_user_can( 'edit_products' ) ) {
-			wp_send_json_error( array( 'message' => __( 'You are not allowed to do this.', 'swiftglb' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'You are not allowed to do this.', 'swiftglb-3d-ar-product-viewer' ) ), 403 );
 		}
 
 		if ( empty( $_FILES['file'] ) || ! is_array( $_FILES['file'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-			wp_send_json_error( array( 'message' => __( 'No file was sent.', 'swiftglb' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'No file was sent.', 'swiftglb-3d-ar-product-viewer' ) ), 400 );
 		}
 
 		$file  = $_FILES['file']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
@@ -49,13 +49,13 @@ class SwiftGLB_Admin_Ajax {
 		$tmp  = isset( $file['tmp_name'] ) ? (string) $file['tmp_name'] : '';
 		$name = isset( $file['name'] ) ? sanitize_file_name( (string) $file['name'] ) : '';
 		if ( ! is_uploaded_file( $tmp ) ) {
-			wp_send_json_error( array( 'message' => __( 'The uploaded file is not valid.', 'swiftglb' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'The uploaded file is not valid.', 'swiftglb-3d-ar-product-viewer' ) ), 400 );
 		}
 
 		$checked = wp_check_filetype_and_ext( $tmp, $name );
 		$ext     = isset( $checked['ext'] ) ? strtolower( (string) $checked['ext'] ) : '';
 		if ( ! in_array( $ext, array( 'glb', 'w3d', 'bin' ), true ) ) {
-			wp_send_json_error( array( 'message' => __( 'This file extension is not allowed.', 'swiftglb' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'This file extension is not allowed.', 'swiftglb-3d-ar-product-viewer' ) ), 400 );
 		}
 
 		$upload = apply_filters(
@@ -69,7 +69,7 @@ class SwiftGLB_Admin_Ajax {
 			)
 		);
 		if ( ! empty( $upload['error'] ) ) {
-			$message = is_string( $upload['error'] ) ? $upload['error'] : __( 'The upload was rejected.', 'swiftglb' );
+			$message = is_string( $upload['error'] ) ? $upload['error'] : __( 'The upload was rejected.', 'swiftglb-3d-ar-product-viewer' );
 			wp_send_json_error( array( 'message' => $message ), 400 );
 		}
 
@@ -131,11 +131,11 @@ class SwiftGLB_Admin_Ajax {
 	 */
 	private function upload_error_message( $code ) {
 		if ( UPLOAD_ERR_INI_SIZE === $code || UPLOAD_ERR_FORM_SIZE === $code ) {
-			return __( 'The file is larger than the server allows.', 'swiftglb' );
+			return __( 'The file is larger than the server allows.', 'swiftglb-3d-ar-product-viewer' );
 		}
 		if ( UPLOAD_ERR_PARTIAL === $code ) {
-			return __( 'The upload was incomplete. Try again.', 'swiftglb' );
+			return __( 'The upload was incomplete. Try again.', 'swiftglb-3d-ar-product-viewer' );
 		}
-		return __( 'The upload failed.', 'swiftglb' );
+		return __( 'The upload failed.', 'swiftglb-3d-ar-product-viewer' );
 	}
 }

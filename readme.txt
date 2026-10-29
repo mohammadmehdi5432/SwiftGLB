@@ -32,9 +32,9 @@ The older shortcode [[woo_3d_viewer]] still works.
 
 = Translations =
 
-Every shopper-facing and admin string uses the `swiftglb` text domain. After this plugin is approved on WordPress.org, translations are delivered automatically for the language selected in **Settings → General**. Translation editors can contribute at [translate.wordpress.org](https://translate.wordpress.org/).
+Every shopper-facing and admin string uses the `swiftglb-3d-ar-product-viewer` text domain. After this plugin is approved on WordPress.org, translations are delivered automatically for the language selected in **Settings → General**. Translation editors can contribute at [translate.wordpress.org](https://translate.wordpress.org/).
 
-Before approval, or on a site that installs the plugin from GitHub, use a translation plugin such as Loco Translate and choose the text domain `swiftglb`.
+Before approval, or on a site that installs the plugin from GitHub, use a translation plugin such as Loco Translate and choose the text domain `swiftglb-3d-ar-product-viewer`.
 
 = Storage =
 
@@ -73,7 +73,7 @@ No. The product page shows a button. The 3D library and the model download after
 
 = How do I translate the plugin? =
 
-Set the site language in **Settings → General**. On WordPress.org, approved translations are installed automatically. Until a language pack exists, translate the `swiftglb` text domain with Loco Translate or another gettext tool.
+Set the site language in **Settings → General**. On WordPress.org, approved translations are installed automatically. Until a language pack exists, translate the `swiftglb-3d-ar-product-viewer` text domain with Loco Translate or another gettext tool.
 
 = What if I use Nginx? =
 
@@ -83,7 +83,7 @@ If PHP cannot move the files outside the web root, copy the `location` rule from
 
 = 1.0.0 =
 * First public release of SwiftGLB – 3D & AR Product Viewer.
-* English source strings with the `swiftglb` text domain for WordPress translations.
+* English source strings with the `swiftglb-3d-ar-product-viewer` text domain for WordPress translations.
 * Protected GLB storage, product-page viewer, augmented reality, and desktop QR code.
 
 == Upgrade Notice ==

@@ -16,7 +16,7 @@ class SwiftGLB_Plugin {
 	 * @return void
 	 */
 	public static function init() {
-		load_plugin_textdomain( 'swiftglb', false, dirname( plugin_basename( SWIFTGLB_FILE ) ) . '/languages' );
+		load_plugin_textdomain( 'swiftglb-3d-ar-product-viewer', false, dirname( plugin_basename( SWIFTGLB_FILE ) ) . '/languages' );
 		self::migrate_legacy_brand();
 		SwiftGLB_Admin::init();
 		SwiftGLB_REST::init();

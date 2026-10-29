@@ -106,7 +106,7 @@ class SwiftGLB_Frontend_Renderer {
 
 		$btn_text = (string) get_post_meta( $product_id, SwiftGLB_Model_Repository::META_BUTTON_TEXT, true );
 		if ( '' === $btn_text ) {
-			$btn_text = __( 'View the 3D model', 'swiftglb' );
+			$btn_text = __( 'View the 3D model', 'swiftglb-3d-ar-product-viewer' );
 		}
 		$auto_rotate = 'yes' === get_post_meta( $product_id, SwiftGLB_Model_Repository::META_AUTO_ROTATE, true ) ? '1' : '0';
 

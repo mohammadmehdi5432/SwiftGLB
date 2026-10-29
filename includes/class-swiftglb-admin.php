@@ -149,7 +149,7 @@ class SwiftGLB_Admin {
 			return;
 		}
 		echo '<div class="notice notice-warning"><p>';
-		echo esc_html__( '3D models are still inside the web root, and Nginx ignores .htaccess files. Deny this path in the Nginx configuration so model files cannot be downloaded directly.', 'swiftglb' );
+		echo esc_html__( '3D models are still inside the web root, and Nginx ignores .htaccess files. Deny this path in the Nginx configuration so model files cannot be downloaded directly.', 'swiftglb-3d-ar-product-viewer' );
 		echo '</p><p><code>';
 		echo esc_html( 'location ^~ ' . trailingslashit( $rel ) . ' { deny all; }' );
 		echo '</code></p></div>';

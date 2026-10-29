@@ -10,7 +10,7 @@
  * Author URI:        https://github.com/mohammadmehdi5432
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       swiftglb
+ * Text Domain:       swiftglb-3d-ar-product-viewer
  * Domain Path:       /languages
  * Requires Plugins:  woocommerce
  * WC requires at least: 8.0
@@ -77,7 +77,7 @@ add_action(
 add_action(
 	'plugins_loaded',
 	static function () {
-		load_plugin_textdomain( 'swiftglb', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+		load_plugin_textdomain( 'swiftglb-3d-ar-product-viewer', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 		SwiftGLB_Plugin::migrate_legacy_brand();
 		if ( ! class_exists( 'WooCommerce' ) ) {
 			add_action(
@@ -86,7 +86,7 @@ add_action(
 					if ( ! current_user_can( 'activate_plugins' ) ) {
 						return;
 					}
-					echo '<div class="notice notice-error"><p>' . esc_html__( 'SwiftGLB needs WooCommerce to be active.', 'swiftglb' ) . '</p></div>';
+					echo '<div class="notice notice-error"><p>' . esc_html__( 'SwiftGLB needs WooCommerce to be active.', 'swiftglb-3d-ar-product-viewer' ) . '</p></div>';
 				}
 			);
 			return;
