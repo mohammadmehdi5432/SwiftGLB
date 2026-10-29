@@ -20,6 +20,44 @@
 	var viewerPromise = null;
 	var requestSerial = 0;
 	var models = {};
+
+	function blobUrlFor(entry) {
+		if (!entry || !entry.blob) {
+			return '';
+		}
+		if (!entry.blobUrl) {
+			entry.blobUrl = URL.createObjectURL(entry.blob);
+		}
+		entry.shownUrl = entry.blobUrl;
+		return entry.blobUrl;
+	}
+
+	function releaseBlobUrl(entry) {
+		if (!entry || !entry.blobUrl) {
+			return;
+		}
+		URL.revokeObjectURL(entry.blobUrl);
+		entry.blobUrl = '';
+	}
+
+	function releaseShownUrl(url) {
+		if (!url) {
+			return;
+		}
+		Object.keys(models).forEach(function (key) {
+			var entry = models[key];
+			if (entry && entry.blobUrl === url) {
+				releaseBlobUrl(entry);
+			}
+		});
+	}
+
+	function discardModels() {
+		Object.keys(models).forEach(function (key) {
+			releaseBlobUrl(models[key]);
+			delete models[key];
+		});
+	}
 	var isWebXRSupported = false;
 	var pendingAutoAr = false;
 	var qrPromise = null;
@@ -727,6 +765,8 @@
 				stage.classList.add('is-ready');
 				ar.hidden = false;
 				setProgress(100);
+				releaseShownUrl(String(viewer.getAttribute('src') || viewer.src || ''));
+				modal.dataset.blobUrl = '';
 				continueAutoAr();
 
 				if (cfg.hdAuto && cfg.hdToken && modal.dataset.currentQuality !== 'hd') {
@@ -748,18 +788,34 @@
 				var status = event.detail && event.detail.status;
 				if (status === 'failed') {
 					showArError();
-				} else if (status === 'not-presenting' && modal.dataset.blobUrl && viewer.src !== modal.dataset.blobUrl) {
-					viewer.src = modal.dataset.blobUrl;
+					return;
 				}
+				if (status !== 'not-presenting' || !modal) {
+					return;
+				}
+				var entry = models[modal.dataset.token];
+				if (!entry || !entry.blob) {
+					return;
+				}
+				var current = String(viewer.src || '');
+				if (entry.shownUrl && current === entry.shownUrl) {
+					return;
+				}
+				var url = blobUrlFor(entry);
+				if (!url || current === url) {
+					return;
+				}
+				modal.dataset.blobUrl = url;
+				viewer.src = url;
 			});
 
 			modal.querySelector('.swiftglb-stage__viewer').appendChild(viewer);
 			modal._viewer = viewer;
 			modal.dataset.token = cfg.token;
-			modal.dataset.blobUrl = downloaded.blobUrl;
+			modal.dataset.blobUrl = blobUrlFor(downloaded);
 			modal.dataset.arUrl = downloaded.arUrl || '';
 			applySceneLook(viewer);
-			viewer.src = downloaded.blobUrl;
+			viewer.src = modal.dataset.blobUrl;
 		}).catch(function () {
 			if (serial === requestSerial) {
 				fail();
@@ -901,10 +957,10 @@
 			if (!modal || !modal._viewer) return;
 			modal.dataset.currentQuality = quality;
 			modal.dataset.token = targetToken;
-			modal.dataset.blobUrl = downloaded.blobUrl;
+			modal.dataset.blobUrl = blobUrlFor(downloaded);
 			modal.dataset.arUrl = downloaded.arUrl || '';
 
-			modal._viewer.src = downloaded.blobUrl;
+			modal._viewer.src = modal.dataset.blobUrl;
 
 			if (hdBtn) {
 				hdBtn.classList.remove('is-loading');
@@ -969,7 +1025,7 @@
 				return response.blob().then(function (blob) {
 					var blobSize = blob.size || total;
 					setProgress(88, blobSize, blobSize);
-					return { blobUrl: URL.createObjectURL(blob), arUrl: arUrl };
+					return { blob: blob, blobUrl: URL.createObjectURL(blob), arUrl: arUrl };
 				});
 			}
 			var reader = response.body.getReader();
@@ -980,7 +1036,7 @@
 					if (result.done) {
 						var blob = new Blob(chunks, { type: 'model/gltf-binary' });
 						setProgress(88, received, total || received);
-						return { blobUrl: URL.createObjectURL(blob), arUrl: arUrl };
+						return { blob: blob, blobUrl: URL.createObjectURL(blob), arUrl: arUrl };
 					}
 					chunks.push(result.value);
 					received += result.value.length;
@@ -1303,13 +1359,7 @@
 		}
 	}
 
-	window.addEventListener('pagehide', function () {
-		Object.keys(models).forEach(function (key) {
-			if (models[key] && models[key].blobUrl) {
-				URL.revokeObjectURL(models[key].blobUrl);
-			}
-		});
-	});
+	window.addEventListener('pagehide', discardModels);
 
 	if (document.readyState === 'loading') {
 		document.addEventListener('DOMContentLoaded', boot);

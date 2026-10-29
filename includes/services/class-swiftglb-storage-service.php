@@ -442,7 +442,23 @@ class SwiftGLB_Storage_Service implements SwiftGLB_Storage_Interface {
 			return new WP_Error( 'swiftglb_format', __( 'Only a GLB file, or a protected plugin file (.w3d or .bin), is accepted.', 'swiftglb' ) );
 		}
 
-		$written = $this->crypto->encrypt_file( $source_path, $dest, $original_name, (int) $size );
+		$encrypt_path = $source_path;
+		$encrypt_size = (int) $size;
+		$stamped      = $this->stamp_glb_file( $source_path );
+		if ( is_string( $stamped ) && $stamped !== $source_path && is_readable( $stamped ) ) {
+			$stamped_size = filesize( $stamped );
+			if ( false !== $stamped_size && $stamped_size >= 12 && $stamped_size <= $this->get_max_bytes() ) {
+				$encrypt_path = $stamped;
+				$encrypt_size = (int) $stamped_size;
+			} else {
+				wp_delete_file( $stamped );
+			}
+		}
+
+		$written = $this->crypto->encrypt_file( $encrypt_path, $dest, $original_name, $encrypt_size );
+		if ( $encrypt_path !== $source_path ) {
+			wp_delete_file( $encrypt_path );
+		}
 		if ( is_wp_error( $written ) ) {
 			wp_delete_file( $dest );
 			return $written;
@@ -586,5 +602,297 @@ class SwiftGLB_Storage_Service implements SwiftGLB_Storage_Interface {
 
 		$header['handle'] = $handle;
 		return $header;
+	}
+
+	/**
+	 * Shop name written into asset.copyright. Empty skips stamping.
+	 *
+	 * @return string
+	 */
+	private function copyright_mark() {
+		$name = wp_strip_all_tags( (string) get_bloginfo( 'name' ) );
+		$name = trim( (string) preg_replace( '/\s+/', ' ', $name ) );
+		$mark = trim( $name . ' ' . (string) home_url( '/' ) );
+		$mark = apply_filters( 'swiftglb_model_copyright', $mark );
+		if ( ! is_string( $mark ) ) {
+			return '';
+		}
+		$mark = trim( str_replace( array( "\r", "\n", "\0" ), ' ', $mark ) );
+		if ( function_exists( 'mb_substr' ) ) {
+			$mark = mb_substr( $mark, 0, 180 );
+		} elseif ( strlen( $mark ) > 180 ) {
+			$mark = substr( $mark, 0, 180 );
+		}
+		return trim( $mark );
+	}
+
+	/**
+	 * Copy a GLB and set asset.copyright when that field is absent.
+	 *
+	 * The binary chunk is copied unchanged. Parse failures keep the original file.
+	 *
+	 * @param string $source_path GLB path.
+	 * @return string Stamped temp path, or the original path when stamping is skipped.
+	 */
+	private function stamp_glb_file( $source_path ) {
+		$mark = $this->copyright_mark();
+		if ( '' === $mark ) {
+			return $source_path;
+		}
+
+		$input = fopen( $source_path, 'rb' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
+		if ( ! $input ) {
+			return $source_path;
+		}
+
+		$header = fread( $input, 12 ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fread
+		if ( ! is_string( $header ) || 12 !== strlen( $header ) || 'glTF' !== substr( $header, 0, 4 ) ) {
+			fclose( $input ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+			return $source_path;
+		}
+
+		$version     = unpack( 'Vver', substr( $header, 4, 4 ) );
+		$declared    = unpack( 'Vlen', substr( $header, 8, 4 ) );
+		$file_size   = filesize( $source_path );
+		$declared_ok = is_array( $version ) && 2 === (int) $version['ver'] && is_array( $declared ) && false !== $file_size;
+		$declared_len = $declared_ok ? (int) $declared['len'] : 0;
+		if ( ! $declared_ok || $declared_len < 20 || $declared_len > $file_size ) {
+			fclose( $input ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+			return $source_path;
+		}
+
+		$chunk_head = fread( $input, 8 ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fread
+		if ( ! is_string( $chunk_head ) || 8 !== strlen( $chunk_head ) || 'JSON' !== substr( $chunk_head, 4, 4 ) ) {
+			fclose( $input ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+			return $source_path;
+		}
+		$chunk_len_raw = unpack( 'Vlen', substr( $chunk_head, 0, 4 ) );
+		$chunk_len     = is_array( $chunk_len_raw ) ? (int) $chunk_len_raw['len'] : 0;
+		if ( $chunk_len < 2 || 0 !== $chunk_len % 4 || $chunk_len > 2 * MB_IN_BYTES || 20 + $chunk_len > $declared_len ) {
+			fclose( $input ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+			return $source_path;
+		}
+
+		$json_chunk = fread( $input, $chunk_len ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fread
+		if ( ! is_string( $json_chunk ) || strlen( $json_chunk ) !== $chunk_len ) {
+			fclose( $input ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+			return $source_path;
+		}
+
+		$json = rtrim( $json_chunk, ' ' );
+		if ( '' === $json || '}' !== substr( $json, -1 ) ) {
+			fclose( $input ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+			return $source_path;
+		}
+
+		$updated = $this->insert_asset_copyright( $json, $mark );
+		if ( ! is_string( $updated ) ) {
+			fclose( $input ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+			return $source_path;
+		}
+
+		$pad      = ( 4 - ( strlen( $updated ) % 4 ) ) % 4;
+		$updated .= str_repeat( ' ', $pad );
+		$rest_len = $declared_len - 20 - $chunk_len;
+		$new_total = 20 + strlen( $updated ) + $rest_len;
+		$temp      = wp_tempnam( 'swiftglb-stamp' );
+		if ( ! is_string( $temp ) || '' === $temp ) {
+			fclose( $input ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+			return $source_path;
+		}
+
+		$output = fopen( $temp, 'wb' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
+		if ( ! $output ) {
+			fclose( $input ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+			wp_delete_file( $temp );
+			return $source_path;
+		}
+
+		$ok = false !== fwrite( $output, 'glTF' . pack( 'V', 2 ) . pack( 'V', $new_total ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite
+		$ok = $ok && false !== fwrite( $output, pack( 'V', strlen( $updated ) ) . 'JSON' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite
+		$ok = $ok && false !== fwrite( $output, $updated ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite
+
+		$remaining = $rest_len;
+		while ( $ok && $remaining > 0 ) {
+			$chunk = fread( $input, min( 65536, $remaining ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fread
+			if ( ! is_string( $chunk ) || '' === $chunk ) {
+				$ok = false;
+				break;
+			}
+			$remaining -= strlen( $chunk );
+			if ( false === fwrite( $output, $chunk ) ) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite
+				$ok = false;
+				break;
+			}
+		}
+
+		fclose( $input ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+		fclose( $output ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
+
+		$written_size = filesize( $temp );
+		if ( ! $ok || 0 !== $remaining || false === $written_size || (int) $written_size !== $new_total ) {
+			wp_delete_file( $temp );
+			return $source_path;
+		}
+
+		return $temp;
+	}
+
+	/**
+	 * Insert asset.copyright without re-encoding the rest of the JSON.
+	 *
+	 * @param string $json GLB JSON chunk without padding.
+	 * @param string $mark Copyright text.
+	 * @return string|null
+	 */
+	private function insert_asset_copyright( $json, $mark ) {
+		$encoded = wp_json_encode( $mark );
+		if ( ! is_string( $encoded ) ) {
+			return null;
+		}
+
+		$length      = strlen( $json );
+		$depth       = 0;
+		$in_string   = false;
+		$escape      = false;
+		$asset_brace = -1;
+
+		for ( $i = 0; $i < $length; $i++ ) {
+			$char = $json[ $i ];
+			if ( $in_string ) {
+				if ( $escape ) {
+					$escape = false;
+				} elseif ( '\\' === $char ) {
+					$escape = true;
+				} elseif ( '"' === $char ) {
+					$in_string = false;
+				}
+				continue;
+			}
+			if ( '"' === $char ) {
+				$end = $this->json_string_end( $json, $i );
+				if ( $end < 0 ) {
+					return null;
+				}
+				$key = substr( $json, $i, $end - $i + 1 );
+				$i   = $end;
+				if ( 1 === $depth && '"asset"' === $key ) {
+					$cursor = $this->skip_json_space( $json, $i + 1 );
+					if ( $cursor < $length && ':' === $json[ $cursor ] ) {
+						$cursor = $this->skip_json_space( $json, $cursor + 1 );
+						if ( $cursor >= $length || '{' !== $json[ $cursor ] ) {
+							return null;
+						}
+						$asset_brace = $cursor;
+						break;
+					}
+				}
+				continue;
+			}
+			if ( '{' === $char || '[' === $char ) {
+				$depth++;
+			} elseif ( '}' === $char || ']' === $char ) {
+				$depth--;
+				if ( $depth < 0 ) {
+					return null;
+				}
+			}
+		}
+
+		if ( $asset_brace < 0 ) {
+			return null;
+		}
+
+		$depth          = 0;
+		$in_string      = false;
+		$escape         = false;
+		$has_copyright  = false;
+		$asset_end      = -1;
+		for ( $i = $asset_brace; $i < $length; $i++ ) {
+			$char = $json[ $i ];
+			if ( $in_string ) {
+				if ( $escape ) {
+					$escape = false;
+				} elseif ( '\\' === $char ) {
+					$escape = true;
+				} elseif ( '"' === $char ) {
+					$in_string = false;
+				}
+				continue;
+			}
+			if ( '"' === $char ) {
+				$end = $this->json_string_end( $json, $i );
+				if ( $end < 0 ) {
+					return null;
+				}
+				if ( 1 === $depth ) {
+					$key    = substr( $json, $i, $end - $i + 1 );
+					$cursor = $this->skip_json_space( $json, $end + 1 );
+					if ( $cursor < $length && ':' === $json[ $cursor ] && '"copyright"' === $key ) {
+						$has_copyright = true;
+					}
+				}
+				$i = $end;
+				continue;
+			}
+			if ( '{' === $char || '[' === $char ) {
+				$depth++;
+			} elseif ( '}' === $char || ']' === $char ) {
+				$depth--;
+				if ( 0 === $depth && '}' === $char ) {
+					$asset_end = $i;
+					break;
+				}
+			}
+		}
+
+		if ( $has_copyright || $asset_end < 0 ) {
+			return null;
+		}
+
+		$cursor = $this->skip_json_space( $json, $asset_brace + 1 );
+		$insert = '"copyright":' . $encoded;
+		if ( $cursor !== $asset_end ) {
+			$insert .= ',';
+		}
+
+		return substr( $json, 0, $asset_brace + 1 ) . $insert . substr( $json, $asset_brace + 1 );
+	}
+
+	/**
+	 * @param string $json JSON text.
+	 * @param int    $open Index of the opening quote.
+	 * @return int Index of the closing quote, or -1.
+	 */
+	private function json_string_end( $json, $open ) {
+		$length = strlen( $json );
+		$escape = false;
+		for ( $i = $open + 1; $i < $length; $i++ ) {
+			if ( $escape ) {
+				$escape = false;
+				continue;
+			}
+			if ( '\\' === $json[ $i ] ) {
+				$escape = true;
+				continue;
+			}
+			if ( '"' === $json[ $i ] ) {
+				return $i;
+			}
+		}
+		return -1;
+	}
+
+	/**
+	 * @param string $json JSON text.
+	 * @param int    $index Start index.
+	 * @return int
+	 */
+	private function skip_json_space( $json, $index ) {
+		$length = strlen( $json );
+		while ( $index < $length && ctype_space( $json[ $index ] ) ) {
+			$index++;
+		}
+		return $index;
 	}
 }
