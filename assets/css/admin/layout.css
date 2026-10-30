@@ -11,6 +11,26 @@
 .swiftglb-fields,
 .swiftglb-variation {
 	padding: 14px 18px 8px;
+	direction: ltr;
+	text-align: left;
+	max-width: 100%;
+	min-width: 0;
+	box-sizing: border-box;
+}
+
+#woocommerce-product-data #swiftglb_product_data.woocommerce_options_panel {
+	box-sizing: border-box;
+	float: left;
+	width: 80%;
+	max-width: 80%;
+	min-width: 0;
+}
+
+.swiftglb-lead,
+.swiftglb-note,
+.swiftglb-label,
+.swiftglb-check span {
+	overflow-wrap: anywhere;
 }
 
 .swiftglb-lead,

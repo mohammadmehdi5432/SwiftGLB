@@ -4,7 +4,7 @@ Tags: woocommerce, 3d, product, gallery, ecommerce
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -80,6 +80,9 @@ Set the site language in **Settings → General**. On WordPress.org, approved tr
 If PHP cannot move the files outside the web root, copy the `location` rule from the admin notice into the site Nginx configuration. Do not deny the whole site.
 
 == Changelog ==
+
+= 1.1.2 =
+* Admin text is left-aligned, and the 3D panel no longer slides under the product-data tabs.
 
 = 1.1.1 =
 * The mobile augmented-reality button stays on one line, with a larger icon.

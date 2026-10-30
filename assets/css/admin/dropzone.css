@@ -14,6 +14,10 @@
 	border-radius: var(--swiftglb-admin-radius-md, 10px);
 	background: #ffffff;
 	transition: var(--swiftglb-admin-transition);
+	max-width: 100%;
+	min-width: 0;
+	box-sizing: border-box;
+	direction: ltr;
 }
 
 .swiftglb-file.is-drag {
@@ -27,7 +31,12 @@
 	color: #2c3338;
 	font-weight: 500;
 	direction: ltr;
+	text-align: left;
 	display: inline-block;
+	flex: 1 1 140px;
+	min-width: 0;
+	max-width: 100%;
+	overflow-wrap: anywhere;
 }
 
 .swiftglb-file-error {
