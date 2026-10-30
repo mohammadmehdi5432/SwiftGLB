@@ -67,7 +67,7 @@ class SwiftGLB_Frontend_Assets {
 			'i18n'   => array(
 				'loading'            => __( 'Loading…', 'swiftglb-3d-ar-product-viewer' ),
 				'loadingModel'       => __( 'Downloading the 3D model…', 'swiftglb-3d-ar-product-viewer' ),
-				'loadingHd'          => __( 'Downloading the high-quality model…', 'swiftglb-3d-ar-product-viewer' ),
+				'loadingHd'          => __( 'Downloading the original model…', 'swiftglb-3d-ar-product-viewer' ),
 				'rendering'          => __( 'Preparing the 3D view…', 'swiftglb-3d-ar-product-viewer' ),
 				'connecting'         => __( 'Connecting…', 'swiftglb-3d-ar-product-viewer' ),
 				'bytesOf'            =>

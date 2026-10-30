@@ -8,7 +8,7 @@
 @import "frontend/variables.css";
 @import "frontend/launcher.css";
 @import "frontend/modal.css";
-@import "frontend/topbar.css";
+@import "frontend/topbar.css?ver=1.1.5";
 @import "frontend/loader.css";
 @import "frontend/ar-controls.css";
 @import "frontend/notices.css";

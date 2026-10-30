@@ -718,7 +718,7 @@
 				}, function (value) {
 					modal._hdPercent = Math.max(8, Math.min(96, Math.round(value || 0)));
 					if (modal && !modal.hidden && modal.dataset.sdReady === '1' && serial === requestSerial && modal.dataset.currentQuality !== 'hd') {
-						setHdStatus(true, config.i18n.loadingHd || 'Downloading the high-quality model…', modal._hdPercent);
+						setHdStatus(true, config.i18n.loadingHd || 'Downloading the original model…', modal._hdPercent);
 					}
 				}).then(function (downloaded) {
 					models[cfg.hdToken] = downloaded;
@@ -977,7 +977,7 @@
 			setHdStatus(false);
 			return;
 		}
-		setHdStatus(true, config.i18n.loadingHd || 'Downloading the high-quality model…', modal._hdPercent || 8);
+		setHdStatus(true, config.i18n.loadingHd || 'Downloading the original model…', modal._hdPercent || 8);
 		if (modal._hdHooked === cfg.hdToken) {
 			return;
 		}
