@@ -12,15 +12,20 @@
 	z-index: var(--swiftglb-z-topbar, 10);
 	display: inline-flex;
 	align-items: center;
-	gap: 10px;
-	padding: 12px 26px;
+	justify-content: center;
+	gap: 8px;
+	width: max-content;
+	max-width: calc(100% - 32px);
+	padding: 13px 20px;
 	border: 0;
 	border-radius: var(--swiftglb-radius-pill, 9999px);
 	background: var(--swiftglb-primary, #2563eb);
 	color: #ffffff;
 	font: inherit;
-	font-size: 14.5px;
+	font-size: 15px;
 	font-weight: 700;
+	line-height: 1;
+	white-space: nowrap;
 	cursor: pointer;
 	box-shadow: 0 8px 24px var(--swiftglb-primary-glow, rgba(37, 99, 235, 0.45));
 	backdrop-filter: blur(16px);
@@ -48,8 +53,18 @@
 	box-shadow: 0 12px 28px rgba(37, 99, 235, 0.55);
 }
 
+.swiftglb-ar span {
+	white-space: nowrap;
+}
+
 .swiftglb-ar svg {
-	flex-shrink: 0;
+	flex: 0 0 auto;
+	width: 22px;
+	height: 22px;
+}
+
+.swiftglb-stage__viewer model-viewer::part(default-ar-button) {
+	display: none;
 }
 
 /* Desktop QR Code Card Modal */
