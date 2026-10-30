@@ -150,6 +150,74 @@
 	color: #ffffff;
 }
 
+.swiftglb-hd-status {
+	position: absolute;
+	top: calc(max(16px, env(safe-area-inset-top)) + 52px);
+	left: 50%;
+	z-index: var(--swiftglb-z-topbar, 10);
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	max-width: calc(100% - 32px);
+	padding: 8px 14px;
+	border-radius: var(--swiftglb-radius-pill, 9999px);
+	background: var(--swiftglb-surface-light);
+	color: var(--swiftglb-text-light);
+	box-shadow: var(--swiftglb-shadow-light);
+	backdrop-filter: blur(18px);
+	-webkit-backdrop-filter: blur(18px);
+	transform: translateX(-50%);
+	pointer-events: none;
+	font-size: 12px;
+	font-weight: 650;
+	line-height: 1.3;
+	white-space: nowrap;
+}
+
+.swiftglb-hd-status[hidden] {
+	display: none !important;
+}
+
+.swiftglb-hd-status__track {
+	display: block;
+	width: 72px;
+	height: 4px;
+	border-radius: var(--swiftglb-radius-pill, 9999px);
+	background: rgba(28, 29, 33, 0.14);
+	overflow: hidden;
+	flex: 0 0 auto;
+}
+
+.swiftglb-hd-status__fill {
+	display: block;
+	height: 100%;
+	width: 0;
+	border-radius: inherit;
+	background: var(--swiftglb-text-light);
+	transition: width 0.2s linear;
+}
+
+.swiftglb-modal[data-scene="dark"] .swiftglb-hd-status {
+	background: var(--swiftglb-surface-dark);
+	color: var(--swiftglb-text-dark);
+	box-shadow: var(--swiftglb-shadow-dark);
+}
+
+.swiftglb-modal[data-scene="dark"] .swiftglb-hd-status__track {
+	background: rgba(255, 255, 255, 0.16);
+}
+
+.swiftglb-modal[data-scene="dark"] .swiftglb-hd-status__fill {
+	background: #ffffff;
+}
+
+@media (max-width: 900px) {
+	.swiftglb-tool-rotate,
+	.swiftglb-tool-reset {
+		display: none;
+	}
+}
+
 /* HD Quality Switcher Button */
 .swiftglb-tool-hd {
 	font-weight: 800;

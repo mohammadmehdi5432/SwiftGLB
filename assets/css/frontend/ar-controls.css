@@ -81,75 +81,92 @@
 
 .swiftglb-qr-card {
 	position: relative;
-	width: min(340px, 92vw);
-	padding: 28px 24px;
-	background: var(--swiftglb-surface-solid-light, #ffffff);
-	border-radius: var(--swiftglb-radius-lg, 20px);
-	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+	width: min(360px, 92vw);
+	padding: 28px 24px 24px;
+	background: #ffffff;
+	color: #1c1d21;
+	border-radius: 20px;
+	box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
 	text-align: center;
-	direction: rtl !important;
+	direction: ltr;
 	animation: swiftglbCardPop 0.3s var(--swiftglb-ease-spring);
 }
 
 .swiftglb-modal[data-scene="dark"] .swiftglb-qr-card {
-	background: var(--swiftglb-surface-dark);
-	color: var(--swiftglb-text-dark);
-	border: 1px solid var(--swiftglb-border-dark);
+	background: #171a1f;
+	color: #f5f6f8;
 }
 
 .swiftglb-qr-close {
 	position: absolute;
-	top: 14px;
-	left: 14px;
-	background: transparent;
-	border: none;
-	font-size: 24px;
-	cursor: pointer;
-	color: #646970;
-	padding: 0 4px;
+	top: 12px;
+	right: 12px;
+	width: 32px;
+	height: 32px;
+	border: 0;
+	border-radius: 999px;
+	background: rgba(28, 29, 33, 0.06);
+	color: #3c414b;
+	font-size: 22px;
 	line-height: 1;
+	cursor: pointer;
+}
+
+.swiftglb-modal[data-scene="dark"] .swiftglb-qr-close {
+	background: rgba(255, 255, 255, 0.08);
+	color: #f5f6f8;
 }
 
 .swiftglb-qr-title {
-	margin: 0 0 8px;
-	font-size: 16px;
+	margin: 8px 28px 8px;
+	font-size: 18px;
 	font-weight: 700;
+	line-height: 1.35;
 }
 
 .swiftglb-qr-desc {
-	margin: 0 0 18px;
-	font-size: 12.5px;
-	color: var(--swiftglb-text-muted-light);
-	line-height: 1.5;
+	margin: 0 auto 18px;
+	max-width: 28em;
+	font-size: 13.5px;
+	color: #5c6370;
+	line-height: 1.55;
 }
 
 .swiftglb-modal[data-scene="dark"] .swiftglb-qr-desc {
-	color: var(--swiftglb-text-muted-dark);
+	color: #b7bdc7;
 }
 
 .swiftglb-qr-frame {
-	display: inline-flex;
-	padding: 12px;
-	background: #ffffff;
-	border-radius: var(--swiftglb-radius-md, 14px);
-	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-	margin-bottom: 16px;
-}
-
-.swiftglb-qr-frame img {
-	display: block;
-	width: 190px;
-	height: 190px;
-}
-
-.swiftglb-qr-badge {
-	display: inline-flex;
+	display: flex;
 	align-items: center;
-	gap: 6px;
+	justify-content: center;
+	width: fit-content;
+	max-width: 100%;
+	margin: 0 auto;
+	padding: 10px;
+	background: #ffffff;
+	border-radius: 16px;
+	border: 1px solid rgba(28, 29, 33, 0.08);
+}
+
+.swiftglb-qr-canvas {
+	display: block;
+	width: min(220px, 68vw);
+	height: auto;
+}
+
+.swiftglb-qr-fallback {
+	display: block;
+	margin: 14px auto 0;
+	max-width: 100%;
 	font-size: 12px;
-	font-weight: 600;
-	color: var(--swiftglb-primary, #2563eb);
-	background: var(--swiftglb-primary-light, #eff6ff);
-	padding: 6px 14px;
-	border-radius: var(--swiftglb-radius-pill, 9999px);
+	line-height: 1.5;
+	color: #3c414b;
+	word-break: break-all;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+
+.swiftglb-qr-fallback[hidden] {
+	display: none !important;
 }

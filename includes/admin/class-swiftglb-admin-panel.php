@@ -53,7 +53,6 @@ class SwiftGLB_Admin_Panel {
 		$filename    = (string) get_post_meta( $post_id, SwiftGLB_Model_Repository::META_FILENAME, true );
 		$hd_token    = (string) get_post_meta( $post_id, SwiftGLB_Model_Repository::META_HD_TOKEN, true );
 		$hd_filename = (string) get_post_meta( $post_id, SwiftGLB_Model_Repository::META_HD_FILENAME, true );
-		$hd_auto     = 'yes' === get_post_meta( $post_id, SwiftGLB_Model_Repository::META_HD_AUTO, true );
 		$enabled     = 'no' !== get_post_meta( $post_id, SwiftGLB_Model_Repository::META_ENABLED, true );
 		$orbit       = 'yes' === get_post_meta( $post_id, SwiftGLB_Model_Repository::META_ORBIT, true );
 		$fixed       = 'yes' === get_post_meta( $post_id, SwiftGLB_Model_Repository::META_AR_FIXED, true );
@@ -81,17 +80,9 @@ class SwiftGLB_Admin_Panel {
 					<div class="swiftglb-quality-card">
 						<div class="swiftglb-quality-card__badge swiftglb-badge-hd"><?php esc_html_e( 'High-quality model (HD)', 'swiftglb-3d-ar-product-viewer' ); ?></div>
 						<p class="swiftglb-label"><?php esc_html_e( 'High-resolution 3D model (optional)', 'swiftglb-3d-ar-product-viewer' ); ?></p>
-						<p class="swiftglb-note"><?php esc_html_e( 'When this file is uploaded, an HD switch appears on the product page.', 'swiftglb-3d-ar-product-viewer' ); ?></p>
+						<p class="swiftglb-note"><?php esc_html_e( 'Opens in the background after the standard model, then replaces it on its own.', 'swiftglb-3d-ar-product-viewer' ); ?></p>
 						<?php $this->render_file_field( 'swiftglb_hd_token', 'swiftglb_hd_filename', $hd_token, $hd_filename ); ?>
 					</div>
-				</div>
-
-				<div class="swiftglb-hd-options">
-					<label class="swiftglb-check">
-						<input type="checkbox" name="swiftglb_hd_auto" value="yes" <?php checked( $hd_auto ); ?> />
-						<span><?php esc_html_e( 'Automatically upgrade to high quality (HD) in the background', 'swiftglb-3d-ar-product-viewer' ); ?></span>
-					</label>
-					<p class="swiftglb-note"><?php esc_html_e( 'When this is off, the high-quality model loads only after the shopper clicks HD. That is recommended, because it uses less data.', 'swiftglb-3d-ar-product-viewer' ); ?></p>
 				</div>
 
 				<label class="swiftglb-check">

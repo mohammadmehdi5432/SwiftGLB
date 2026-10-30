@@ -4,7 +4,7 @@ Tags: woocommerce, 3d, product, gallery, ecommerce
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,12 +81,21 @@ If PHP cannot move the files outside the web root, copy the `location` rule from
 
 == Changelog ==
 
+= 1.1.0 =
+* The high-quality model downloads in the background after the standard model opens, then replaces it. The HD switch is gone.
+* A small progress line at the top of the viewer shows that download.
+* Phone viewers no longer show the auto-rotate and reset buttons.
+* The desktop QR card is a plain code, without the blue scan button or the address beside it.
+
 = 1.0.0 =
 * First public release of SwiftGLB – 3D & AR Product Viewer.
 * English source strings with the `swiftglb-3d-ar-product-viewer` text domain for WordPress translations.
 * Protected GLB storage, product-page viewer, augmented reality, and desktop QR code.
 
 == Upgrade Notice ==
+
+= 1.1.0 =
+High-quality models now replace the standard model automatically. Refresh the product page after updating.
 
 = 1.0.0 =
 First release. WooCommerce is required.

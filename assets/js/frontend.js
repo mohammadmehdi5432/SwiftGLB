@@ -434,12 +434,15 @@
 			+ '        <button type="button" data-scene="light" aria-label="' + config.i18n.day + '">' + iconSun + '</button>'
 			+ '        <button type="button" data-scene="dark" aria-label="' + config.i18n.night + '">' + iconMoon + '</button>'
 			+ '      </div>'
-			+ '      <button type="button" class="swiftglb-tool-btn swiftglb-tool-hd" aria-label="' + (config.i18n.switchToHd || 'High quality') + '" title="' + (config.i18n.switchToHd || 'High quality') + '" hidden><span class="swiftglb-hd-tag">HD</span></button>'
 			+ '      <button type="button" class="swiftglb-tool-btn swiftglb-tool-rotate" aria-label="' + (config.i18n.autoRotate || 'Rotate') + '">' + iconRotate + '</button>'
 			+ '      <button type="button" class="swiftglb-tool-btn swiftglb-tool-reset" aria-label="' + (config.i18n.resetView || 'Reset') + '">' + iconReset + '</button>'
 			+ '      <button type="button" class="swiftglb-tool-btn swiftglb-tool-snapshot" aria-label="' + (config.i18n.snapshot || 'Photo') + '">' + iconCamera + '</button>'
 			+ '      <button type="button" class="swiftglb-tool-btn swiftglb-tool-fullscreen" aria-label="' + (config.i18n.fullscreen || 'Full screen') + '">' + iconFullscreen + '</button>'
 			+ '    </div>'
+			+ '  </div>'
+			+ '  <div class="swiftglb-hd-status" hidden>'
+			+ '    <span class="swiftglb-hd-status__label"></span>'
+			+ '    <span class="swiftglb-hd-status__track" aria-hidden="true"><span class="swiftglb-hd-status__fill"></span></span>'
 			+ '  </div>'
 			+ '  <div class="swiftglb-stage">'
 			+ '    <div class="swiftglb-stage__viewer"></div>'
@@ -476,7 +479,7 @@
 			+ '      <h4 class="swiftglb-qr-title">' + (config.i18n.qrTitle || 'View in augmented reality') + '</h4>'
 			+ '      <p class="swiftglb-qr-desc">' + (config.i18n.qrDesc || 'Scan this code with your phone camera:') + '</p>'
 			+ '      <div class="swiftglb-qr-frame"></div>'
-			+ '      <div class="swiftglb-qr-badge">' + iconAr + '<span>' + (config.i18n.qrScan || 'Scan with your phone') + '</span></div>'
+			+ '      <a class="swiftglb-qr-fallback" hidden></a>'
 			+ '    </div>'
 			+ '  </div>'
 			+ '</div>';
@@ -511,11 +514,6 @@
 
 		modal.querySelector('.swiftglb-ar').addEventListener('click', function () {
 			startAR();
-		});
-
-		// Toolbar Action Handlers
-		modal.querySelector('.swiftglb-tool-hd').addEventListener('click', function () {
-			toggleQuality();
 		});
 
 		modal.querySelector('.swiftglb-tool-rotate').addEventListener('click', function () {
@@ -642,11 +640,15 @@
 			showNotice('unsupported');
 			return;
 		}
-		if (modal.dataset.token === cfg.token && modal._viewer) {
+		if ((modal.dataset.token === cfg.token || modal.dataset.baseToken === cfg.token) && modal._viewer && modal.dataset.currentQuality !== 'failed') {
 			applyScene(modal._viewer, cfg);
 			modal.querySelector('.swiftglb-stage').classList.add('is-ready');
 			modal.querySelector('.swiftglb-ar').hidden = false;
+			modal.dataset.sdReady = '1';
 			continueAutoAr();
+			if (cfg.hdToken && modal.dataset.currentQuality !== 'hd' && modal._hdPromise) {
+				applyHdWhenReady(modal._hdPromise, cfg, modal._loadSerial || requestSerial, modal._viewer);
+			}
 			return;
 		}
 		load(cfg);
@@ -658,7 +660,7 @@
 			close();
 			return;
 		}
-		if (modal.dataset.token === cfg.token && modal._viewer) {
+		if ((modal.dataset.token === cfg.token || modal.dataset.baseToken === cfg.token) && modal._viewer) {
 			applyColor(modal._viewer, cfg.color);
 			return;
 		}
@@ -670,6 +672,7 @@
 			return;
 		}
 		modal.hidden = true;
+		setHdStatus(false);
 		document.documentElement.classList.remove('swiftglb-open');
 		if (document.fullscreenElement || document.webkitFullscreenElement) {
 			if (document.exitFullscreen) {
@@ -688,25 +691,41 @@
 		var stage = modal.querySelector('.swiftglb-stage');
 		var text = modal.querySelector('.swiftglb-loader-text');
 		var ar = modal.querySelector('.swiftglb-ar');
-		var hdBtn = modal.querySelector('.swiftglb-tool-hd');
 		stage.classList.remove('is-ready', 'is-error');
 		hideNotice();
+		setHdStatus(false);
 		text.textContent = config.i18n.loadingModel || config.i18n.loading;
 		ar.hidden = true;
 		setProgress(5, 0, 0);
 		clearViewer();
+		modal.dataset.currentQuality = 'sd';
+		modal.dataset.sdReady = '';
+		modal.dataset.baseToken = cfg.token;
+		modal._loadSerial = serial;
+		modal._hdPercent = 8;
+		modal._hdPromise = null;
 
-		if (hdBtn) {
-			if (cfg.hdToken) {
-				hdBtn.hidden = false;
-				modal.dataset.currentQuality = 'sd';
-				hdBtn.classList.remove('is-active', 'is-loading');
-				hdBtn.setAttribute('title', config.i18n.switchToHd || 'Switch to high quality (HD)');
+		if (/^[a-f0-9]{32}$/.test(cfg.hdToken)) {
+			if (models[cfg.hdToken]) {
+				modal._hdPercent = 100;
+				modal._hdPromise = Promise.resolve(models[cfg.hdToken]);
 			} else {
-				hdBtn.hidden = true;
-				modal.dataset.currentQuality = 'sd';
+				modal._hdPromise = fetchModel({
+					productId: cfg.productId,
+					token: cfg.hdToken,
+					variationId: cfg.variationId
+				}, function (value) {
+					modal._hdPercent = Math.max(8, Math.min(96, Math.round(value || 0)));
+					if (modal && !modal.hidden && modal.dataset.sdReady === '1' && serial === requestSerial && modal.dataset.currentQuality !== 'hd') {
+						setHdStatus(true, config.i18n.loadingHd || 'Downloading the high-quality model…', modal._hdPercent);
+					}
+				}).then(function (downloaded) {
+					models[cfg.hdToken] = downloaded;
+					return downloaded;
+				});
 			}
 		}
+		modal._hdHooked = '';
 
 		var rotBtn = modal.querySelector('.swiftglb-tool-rotate');
 		if (rotBtn) {
@@ -760,28 +779,45 @@
 				if (serial !== requestSerial) {
 					return;
 				}
+				var first = viewer.dataset.swiftglbBooted !== '1';
+				viewer.dataset.swiftglbBooted = '1';
 				applyColor(viewer, modal._launcher ? configFrom(modal._launcher).color : cfg.color);
 				applySceneLook(viewer);
 				stage.classList.add('is-ready');
 				ar.hidden = false;
+				if (!first) {
+					if (modal.dataset.token === cfg.hdToken) {
+						modal.dataset.currentQuality = 'hd';
+						setHdStatus(false);
+					}
+					return;
+				}
 				setProgress(100);
 				releaseShownUrl(String(viewer.getAttribute('src') || viewer.src || ''));
 				modal.dataset.blobUrl = '';
+				modal.dataset.sdReady = '1';
 				continueAutoAr();
-
-				if (cfg.hdAuto && cfg.hdToken && modal.dataset.currentQuality !== 'hd') {
-					window.setTimeout(function () {
-						if (serial === requestSerial && modal && !modal.hidden && modal.dataset.currentQuality !== 'hd') {
-							switchQuality('hd', true);
-						}
-					}, 1800);
+				if (modal._hdPromise) {
+					applyHdWhenReady(modal._hdPromise, cfg, serial, viewer);
 				}
 			});
 
 			viewer.addEventListener('error', function () {
-				if (serial === requestSerial) {
-					fail();
+				if (serial !== requestSerial) {
+					return;
 				}
+				if (viewer.dataset.swiftglbBooted === '1' && cfg.hdToken && modal.dataset.token === cfg.hdToken) {
+					var sdEntry = models[cfg.token];
+					modal.dataset.currentQuality = 'sd';
+					modal.dataset.token = cfg.token;
+					modal._hdHooked = '';
+					setHdStatus(false);
+					if (sdEntry) {
+						viewer.src = blobUrlFor(sdEntry);
+					}
+					return;
+				}
+				fail();
 			});
 
 			viewer.addEventListener('ar-status', function (event) {
@@ -913,87 +949,72 @@
 		modal.dataset.arUrl = '';
 	}
 
-	function toggleQuality() {
-		if (!modal || !modal._launcher) return;
-		var cfg = configFrom(modal._launcher);
-		if (!cfg.hdToken) return;
-		var nextQuality = modal.dataset.currentQuality === 'hd' ? 'sd' : 'hd';
-		switchQuality(nextQuality, false);
+	function setHdStatus(visible, label, percent) {
+		if (!modal) {
+			return;
+		}
+		var status = modal.querySelector('.swiftglb-hd-status');
+		if (!status) {
+			return;
+		}
+		status.hidden = !visible;
+		var text = status.querySelector('.swiftglb-hd-status__label');
+		var fill = status.querySelector('.swiftglb-hd-status__fill');
+		if (text && label) {
+			text.textContent = label;
+		}
+		if (fill) {
+			fill.style.width = Math.max(0, Math.min(100, Math.round(percent || 0))) + '%';
+		}
 	}
 
-	function switchQuality(quality, isSilent) {
-		if (!modal || !modal._viewer || !modal._launcher) return;
-		var cfg = configFrom(modal._launcher);
-		var hdBtn = modal.querySelector('.swiftglb-tool-hd');
-		var targetToken = quality === 'hd' ? cfg.hdToken : cfg.token;
-		if (!targetToken) return;
-
-		if (hdBtn) {
-			hdBtn.classList.add('is-loading');
-			hdBtn.setAttribute('title', quality === 'hd' ? (config.i18n.loadingHd || 'Loading high quality…') : (config.i18n.loading || 'Switching…'));
+	function applyHdWhenReady(promise, cfg, serial, viewer) {
+		if (!promise || !viewer || !modal) {
+			return;
 		}
-
-		var cached = models[targetToken];
-		var readyPromise = cached ? Promise.resolve(cached) : fetchModel({
-			productId: cfg.productId,
-			token: targetToken,
-			variationId: cfg.variationId
-		}).then(function (downloaded) {
-			models[targetToken] = downloaded;
-			return downloaded;
-		});
-
-		if (!isSilent && !cached) {
-			var stage = modal.querySelector('.swiftglb-stage');
-			stage.classList.remove('is-ready');
-			var text = modal.querySelector('.swiftglb-loader-text');
-			if (text) {
-				text.textContent = quality === 'hd' ? (config.i18n.loadingHd || 'Downloading high quality (HD)…') : (config.i18n.loadingModel || 'Loading…');
-			}
-			setProgress(10);
+		if (modal.dataset.currentQuality === 'hd') {
+			setHdStatus(false);
+			return;
 		}
-
-		readyPromise.then(function (downloaded) {
-			if (!modal || !modal._viewer) return;
-			modal.dataset.currentQuality = quality;
-			modal.dataset.token = targetToken;
-			modal.dataset.blobUrl = blobUrlFor(downloaded);
-			modal.dataset.arUrl = downloaded.arUrl || '';
-
-			modal._viewer.src = modal.dataset.blobUrl;
-
-			if (hdBtn) {
-				hdBtn.classList.remove('is-loading');
-				if (quality === 'hd') {
-					hdBtn.classList.add('is-active');
-					hdBtn.setAttribute('title', config.i18n.switchToSd || 'Switch to standard quality');
-				} else {
-					hdBtn.classList.remove('is-active');
-					hdBtn.setAttribute('title', config.i18n.switchToHd || 'Switch to high quality (HD)');
+		setHdStatus(true, config.i18n.loadingHd || 'Downloading the high-quality model…', modal._hdPercent || 8);
+		if (modal._hdHooked === cfg.hdToken) {
+			return;
+		}
+		modal._hdHooked = cfg.hdToken;
+		promise.then(function (downloaded) {
+			if (!modal || modal.hidden || serial !== requestSerial || modal._viewer !== viewer || modal.dataset.currentQuality === 'hd') {
+				if (modal && modal._hdHooked === cfg.hdToken) {
+					modal._hdHooked = '';
 				}
+				return;
 			}
-
-			if (!isSilent) {
-				modal.querySelector('.swiftglb-stage').classList.add('is-ready');
-				setProgress(100);
-			}
+			modal.dataset.token = cfg.hdToken;
+			modal.dataset.arUrl = downloaded.arUrl || '';
+			modal.dataset.blobUrl = blobUrlFor(downloaded);
+			setHdStatus(true, config.i18n.rendering || 'Preparing the high-quality model…', 100);
+			viewer.src = modal.dataset.blobUrl;
 		}).catch(function () {
-			if (hdBtn) {
-				hdBtn.classList.remove('is-loading');
-			}
-			if (!isSilent) {
-				showNotice('error');
+			if (modal && serial === requestSerial) {
+				modal._hdHooked = '';
+				setHdStatus(false);
 			}
 		});
 	}
 
-	function fetchModel(cfg) {
-		return requestModel(cfg, false).catch(function () {
-			return requestModel(cfg, true);
+	function fetchModel(cfg, onProgress) {
+		return requestModel(cfg, false, onProgress).catch(function () {
+			return requestModel(cfg, true, onProgress);
 		});
 	}
 
-	function requestModel(cfg, useAjax) {
+	function requestModel(cfg, useAjax, onProgress) {
+		function report(value, received, total) {
+			if (typeof onProgress === 'function') {
+				onProgress(value, received, total);
+			} else {
+				setProgress(value, received, total);
+			}
+		}
 		var url = useAjax ? new URL(config.ajax, window.location.href) : new URL(config.rest + cfg.token, window.location.href);
 		if (useAjax) {
 			url.searchParams.set('action', 'swiftglb_model');
@@ -1024,7 +1045,7 @@
 			if (!response.body || !response.body.getReader) {
 				return response.blob().then(function (blob) {
 					var blobSize = blob.size || total;
-					setProgress(88, blobSize, blobSize);
+					report(88, blobSize, blobSize);
 					return { blob: blob, blobUrl: URL.createObjectURL(blob), arUrl: arUrl };
 				});
 			}
@@ -1035,15 +1056,15 @@
 				return reader.read().then(function (result) {
 					if (result.done) {
 						var blob = new Blob(chunks, { type: 'model/gltf-binary' });
-						setProgress(88, received, total || received);
+						report(88, received, total || received);
 						return { blob: blob, blobUrl: URL.createObjectURL(blob), arUrl: arUrl };
 					}
 					chunks.push(result.value);
 					received += result.value.length;
 					if (total) {
-						setProgress(Math.min(88, Math.round((received / total) * 88)), received, total);
+						report(Math.min(88, Math.round((received / total) * 88)), received, total);
 					} else {
-						setProgress(Math.min(85, Math.round(received / (1024 * 100))), received, 0);
+						report(Math.min(85, Math.round(received / (1024 * 100))), received, 0);
 					}
 					return pump();
 				});
@@ -1262,28 +1283,35 @@
 		targetUrl += (targetUrl.indexOf('?') === -1 ? '?' : '&') + 'swiftglb_ar=1';
 
 		var generation = ++qrSerial;
+		var fallback = modal.querySelector('.swiftglb-qr-fallback');
 		frame.textContent = '';
-		var link = document.createElement('a');
-		link.className = 'swiftglb-qr-link';
-		link.href = targetUrl;
-		link.textContent = targetUrl;
+		if (fallback) {
+			fallback.hidden = true;
+			fallback.removeAttribute('href');
+			fallback.textContent = '';
+		}
+		function showFallback() {
+			if (generation !== qrSerial || !fallback) {
+				return;
+			}
+			frame.textContent = '';
+			fallback.hidden = false;
+			fallback.href = targetUrl;
+			fallback.textContent = targetUrl;
+		}
 		loadQr().then(function () {
 			if (generation !== qrSerial) {
 				return;
 			}
 			frame.textContent = '';
 			var canvas = document.createElement('canvas');
+			canvas.className = 'swiftglb-qr-canvas';
 			if (window.Saz3dQr && window.Saz3dQr.draw(canvas, targetUrl)) {
 				frame.appendChild(canvas);
-			}
-			frame.appendChild(link);
-		}).catch(function () {
-			if (generation !== qrSerial) {
 				return;
 			}
-			frame.textContent = '';
-			frame.appendChild(link);
-		});
+			showFallback();
+		}).catch(showFallback);
 
 		qrModal.hidden = false;
 	}
