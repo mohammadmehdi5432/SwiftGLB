@@ -3,7 +3,7 @@
  * Plugin Name:       SwiftGLB – 3D & AR Product Viewer
  * Plugin URI:        https://github.com/mohammadmehdi5432/SwiftGLB
  * Description:       Show WooCommerce products in 3D and augmented reality. The model downloads only after the shopper clicks.
- * Version:           1.1.2
+ * Version:           1.1.3
  * Requires at least: 6.5
  * Requires PHP:      7.4
  * Author:            mohammadmehdi5432
@@ -25,7 +25,7 @@ if ( defined( 'SWIFTGLB_FILE' ) ) {
 	return;
 }
 
-define( 'SWIFTGLB_VERSION', '1.1.2' );
+define( 'SWIFTGLB_VERSION', '1.1.3' );
 define( 'SWIFTGLB_FILE', __FILE__ );
 define( 'SWIFTGLB_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SWIFTGLB_URL', plugin_dir_url( __FILE__ ) );

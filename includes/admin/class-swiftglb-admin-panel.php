@@ -53,21 +53,13 @@ class SwiftGLB_Admin_Panel {
 		$filename    = (string) get_post_meta( $post_id, SwiftGLB_Model_Repository::META_FILENAME, true );
 		$hd_token    = (string) get_post_meta( $post_id, SwiftGLB_Model_Repository::META_HD_TOKEN, true );
 		$hd_filename = (string) get_post_meta( $post_id, SwiftGLB_Model_Repository::META_HD_FILENAME, true );
-		$enabled     = 'no' !== get_post_meta( $post_id, SwiftGLB_Model_Repository::META_ENABLED, true );
-		$orbit       = 'yes' === get_post_meta( $post_id, SwiftGLB_Model_Repository::META_ORBIT, true );
 		$fixed       = 'yes' === get_post_meta( $post_id, SwiftGLB_Model_Repository::META_AR_FIXED, true );
-		$auto_rotate = 'yes' === get_post_meta( $post_id, SwiftGLB_Model_Repository::META_AUTO_ROTATE, true );
 		$btn_text    = (string) get_post_meta( $post_id, SwiftGLB_Model_Repository::META_BUTTON_TEXT, true );
 		?>
 		<div id="swiftglb_product_data" class="panel woocommerce_options_panel hidden">
 			<div class="swiftglb-fields">
 				<input type="hidden" name="swiftglb_present" value="1" />
 				<p class="swiftglb-lead"><?php esc_html_e( 'The file is protected on upload and is not served directly from the uploads folder. On the product page, the 3D script downloads only after the shopper clicks the button.', 'swiftglb-3d-ar-product-viewer' ); ?></p>
-
-				<label class="swiftglb-check">
-					<input type="checkbox" name="swiftglb_enabled" value="yes" <?php checked( $enabled ); ?> />
-					<span><?php esc_html_e( 'Show the 3D viewer on the product page', 'swiftglb-3d-ar-product-viewer' ); ?></span>
-				</label>
 
 				<div class="swiftglb-quality-grid">
 					<div class="swiftglb-quality-card">
@@ -84,18 +76,6 @@ class SwiftGLB_Admin_Panel {
 						<?php $this->render_file_field( 'swiftglb_hd_token', 'swiftglb_hd_filename', $hd_token, $hd_filename ); ?>
 					</div>
 				</div>
-
-				<label class="swiftglb-check">
-					<input type="checkbox" name="swiftglb_auto_rotate" value="yes" <?php checked( $auto_rotate ); ?> />
-					<span><?php esc_html_e( 'Rotate the model automatically when it opens', 'swiftglb-3d-ar-product-viewer' ); ?></span>
-				</label>
-				<p class="swiftglb-note"><?php esc_html_e( 'The model turns slowly so the shopper can see that it is 3D.', 'swiftglb-3d-ar-product-viewer' ); ?></p>
-
-				<label class="swiftglb-check">
-					<input type="checkbox" name="swiftglb_orbit_lock" value="yes" <?php checked( $orbit ); ?> />
-					<span><?php esc_html_e( 'Hide the underside of the product (useful for shoes and furniture)', 'swiftglb-3d-ar-product-viewer' ); ?></span>
-				</label>
-				<p class="swiftglb-note"><?php esc_html_e( 'The camera cannot move below the product.', 'swiftglb-3d-ar-product-viewer' ); ?></p>
 
 				<label class="swiftglb-check">
 					<input type="checkbox" name="swiftglb_ar_fixed" value="yes" <?php checked( $fixed ); ?> />

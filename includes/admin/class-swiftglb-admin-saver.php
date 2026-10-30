@@ -74,10 +74,8 @@ class SwiftGLB_Admin_Saver {
 		$this->write_token( $post_id, $token, $filename, $previous, SwiftGLB_Model_Repository::META_TOKEN, SwiftGLB_Model_Repository::META_FILENAME );
 		$this->write_token( $post_id, $token_hd, $filename_hd, $previous_hd, SwiftGLB_Model_Repository::META_HD_TOKEN, SwiftGLB_Model_Repository::META_HD_FILENAME );
 
-		update_post_meta( $post_id, SwiftGLB_Model_Repository::META_ENABLED, isset( $_POST['swiftglb_enabled'] ) ? 'yes' : 'no' );
-		update_post_meta( $post_id, SwiftGLB_Model_Repository::META_ORBIT, isset( $_POST['swiftglb_orbit_lock'] ) ? 'yes' : 'no' );
+		update_post_meta( $post_id, SwiftGLB_Model_Repository::META_ENABLED, 'yes' );
 		update_post_meta( $post_id, SwiftGLB_Model_Repository::META_AR_FIXED, isset( $_POST['swiftglb_ar_fixed'] ) ? 'yes' : 'no' );
-		update_post_meta( $post_id, SwiftGLB_Model_Repository::META_AUTO_ROTATE, isset( $_POST['swiftglb_auto_rotate'] ) ? 'yes' : 'no' );
 		update_post_meta( $post_id, SwiftGLB_Model_Repository::META_HD_AUTO, isset( $_POST['swiftglb_hd_auto'] ) ? 'yes' : 'no' );
 
 		$custom_btn = isset( $_POST['swiftglb_button_text'] ) ? sanitize_text_field( wp_unslash( $_POST['swiftglb_button_text'] ) ) : '';
