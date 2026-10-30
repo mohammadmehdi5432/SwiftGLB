@@ -4,7 +4,7 @@ Tags: woocommerce, 3d, product, gallery, ecommerce
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.3
+Stable tag: 1.1.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -80,6 +80,9 @@ Set the site language in **Settings → General**. On WordPress.org, approved tr
 If PHP cannot move the files outside the web root, copy the `location` rule from the admin notice into the site Nginx configuration. Do not deny the whole site.
 
 == Changelog ==
+
+= 1.1.4 =
+* The viewer close button now closes the model. A click on it was treated as a lighting switch.
 
 = 1.1.3 =
 * Removed the viewer, auto-rotate, and underside options from the product screen.

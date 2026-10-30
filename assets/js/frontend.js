@@ -495,12 +495,13 @@
 		markScene(modal.dataset.scene);
 
 		modal.addEventListener('click', function (event) {
-			var sceneButton = event.target && event.target.closest ? event.target.closest('[data-scene]') : null;
+			var sceneButton = event.target && event.target.closest ? event.target.closest('button[data-scene]') : null;
 			if (sceneButton) {
 				setScene(sceneButton.getAttribute('data-scene'));
 				return;
 			}
-			if (event.target && event.target.getAttribute('data-close') === '1') {
+			var closeButton = event.target && event.target.closest ? event.target.closest('[data-close="1"]') : null;
+			if (closeButton) {
 				close();
 			}
 		});
