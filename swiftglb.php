@@ -25,7 +25,7 @@ if ( defined( 'SWIFTGLB_FILE' ) ) {
 	return;
 }
 
-define( 'SWIFTGLB_VERSION', '1.1.7' );
+define( 'SWIFTGLB_VERSION', '1.1.8' );
 define( 'SWIFTGLB_FILE', __FILE__ );
 define( 'SWIFTGLB_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SWIFTGLB_URL', plugin_dir_url( __FILE__ ) );

@@ -719,23 +719,27 @@
 				token: cfg.hdToken,
 				variationId: cfg.variationId
 			};
-			if (arUrls[cfg.hdToken]) {
+			if (models[cfg.hdToken] && models[cfg.hdToken].blob && freshArUrl(cfg.hdToken)) {
 				modal._hdPercent = 100;
-				modal._hdPromise = Promise.resolve({ arUrl: arUrls[cfg.hdToken] });
+				modal._hdPromise = Promise.resolve(models[cfg.hdToken]);
+			} else if (models[cfg.hdToken] && models[cfg.hdToken].blob) {
+				modal._hdPromise = fetchModel(hdCfg, null, true).then(function (meta) {
+					rememberArUrl(cfg.hdToken, meta && meta.arUrl);
+					models[cfg.hdToken].arUrl = (meta && meta.arUrl) || '';
+					return models[cfg.hdToken];
+				});
 			} else {
 				modal._hdPromise = fetchModel(hdCfg, function (value) {
 					modal._hdPercent = Math.max(8, Math.min(96, Math.round(value || 0)));
-					if (modal && !modal.hidden && serial === requestSerial && modal.dataset.hdUrlReady !== '1') {
-						setHdStatus(true, config.i18n.arWaiting || 'Preparing augmented reality…', modal._hdPercent);
+					if (modal && !modal.hidden && serial === requestSerial && modal.dataset.currentQuality !== 'hd') {
+						setHdStatus(true, config.i18n.loadingHd || 'Downloading the original model…', modal._hdPercent);
 					}
-				}, true).then(function (downloaded) {
-					if (downloaded && downloaded.arUrl) {
-						arUrls[cfg.hdToken] = downloaded.arUrl;
-					}
+				}).then(function (downloaded) {
+					models[cfg.hdToken] = downloaded;
+					rememberArUrl(cfg.hdToken, downloaded && downloaded.arUrl);
 					return downloaded;
 				});
 			}
-			applyHdWhenReady(modal._hdPromise, cfg, serial);
 		}
 		modal._hdHooked = '';
 
@@ -745,10 +749,22 @@
 		}
 
 		var cached = models[cfg.token];
-		var readyModel = cached ? Promise.resolve(cached) : fetchModel(cfg).then(function (downloaded) {
-			models[cfg.token] = downloaded;
-			return downloaded;
-		});
+		var readyModel;
+		if (cached && cached.blob && freshArUrl(cfg.token)) {
+			readyModel = Promise.resolve(cached);
+		} else if (cached && cached.blob) {
+			readyModel = fetchModel(cfg, null, true).then(function (meta) {
+				rememberArUrl(cfg.token, meta && meta.arUrl);
+				cached.arUrl = (meta && meta.arUrl) || cached.arUrl || '';
+				return cached;
+			});
+		} else {
+			readyModel = fetchModel(cfg).then(function (downloaded) {
+				models[cfg.token] = downloaded;
+				rememberArUrl(cfg.token, downloaded && downloaded.arUrl);
+				return downloaded;
+			});
+		}
 
 		Promise.all([readyModel, loadViewer()]).then(function (results) {
 			var downloaded = results[0];
@@ -797,14 +813,18 @@
 				applySceneLook(viewer);
 				stage.classList.add('is-ready');
 				if (!cfg.hdToken) {
-					var preview = models[cfg.token];
-					modal.dataset.arUrl = (preview && preview.arUrl) || modal.dataset.arUrl || '';
+					var fresh = freshArUrl(cfg.token);
+					if (fresh) {
+						modal.dataset.arUrl = fresh;
+					}
 				}
 				maybeEnableAr();
 				if (!first) {
 					if (modal.dataset.token === cfg.hdToken) {
 						modal.dataset.currentQuality = 'hd';
 						setHdStatus(false);
+						maybeEnableAr();
+						continueAutoAr();
 					}
 					return;
 				}
@@ -863,9 +883,16 @@
 			modal._viewer = viewer;
 			modal.dataset.token = cfg.token;
 			modal.dataset.blobUrl = blobUrlFor(downloaded);
-			modal.dataset.arUrl = downloaded.arUrl || '';
+			if (!cfg.hdToken) {
+				rememberArUrl(cfg.token, freshArUrl(cfg.token) || downloaded.arUrl || '');
+				modal.dataset.arUrl = freshArUrl(cfg.token);
+				scheduleArRefresh(cfg.token, serial);
+			}
 			applySceneLook(viewer);
 			viewer.src = modal.dataset.blobUrl;
+			if (cfg.hdToken && modal._hdPromise) {
+				applyHdWhenReady(modal._hdPromise, cfg, serial);
+			}
 		}).catch(function () {
 			if (serial === requestSerial) {
 				fail();
@@ -954,6 +981,10 @@
 	}
 
 	function clearViewer() {
+		if (modal._arRefreshTimer) {
+			window.clearTimeout(modal._arRefreshTimer);
+			modal._arRefreshTimer = 0;
+		}
 		if (modal._viewer) {
 			modal._viewer.remove();
 			modal._viewer = null;
@@ -999,36 +1030,102 @@
 		modal.dataset.arReady = ready ? '1' : '';
 	}
 
+	function rememberArUrl(token, url) {
+		if (!token || !url || url.indexOf('https://') !== 0) {
+			return;
+		}
+		arUrls[token] = { url: url, at: Date.now() };
+	}
+
+	function freshArUrl(token) {
+		var item = token ? arUrls[token] : null;
+		if (!item || Date.now() - item.at > 20 * 60 * 1000) {
+			return '';
+		}
+		return item.url;
+	}
+
 	function maybeEnableAr() {
 		if (!modal) {
 			return;
 		}
 		var needsHd = modal.dataset.needsHd === '1';
-		var ready = modal.dataset.sdReady === '1' && !!modal.dataset.arUrl && (!needsHd || modal.dataset.hdUrlReady === '1');
+		var shown = needsHd ? modal.dataset.currentQuality === 'hd' : modal.dataset.sdReady === '1';
+		var url = modal.dataset.arUrl || '';
+		var ready = shown && url.indexOf('https://') === 0;
 		setArReady(ready);
+	}
+
+	function scheduleArRefresh(token, serial) {
+		if (!modal || !token) {
+			return;
+		}
+		window.clearTimeout(modal._arRefreshTimer);
+		modal._arRefreshTimer = window.setTimeout(function () {
+			refreshArUrl(token, serial);
+		}, 15 * 60 * 1000);
+	}
+
+	function refreshArUrl(token, serial) {
+		if (!modal || modal.hidden || serial !== requestSerial || !token || !modal._launcher) {
+			return;
+		}
+		var base = configFrom(modal._launcher);
+		fetchModel({
+			productId: base.productId,
+			token: token,
+			variationId: base.variationId
+		}, null, true).then(function (meta) {
+			if (!modal || modal.hidden || serial !== requestSerial) {
+				return;
+			}
+			rememberArUrl(token, meta && meta.arUrl);
+			var fresh = freshArUrl(token);
+			if (fresh && models[token]) {
+				models[token].arUrl = fresh;
+			}
+			if (fresh && (modal.dataset.token === token || (!modal.dataset.needsHd && modal.dataset.baseToken === token))) {
+				modal.dataset.arUrl = fresh;
+				maybeEnableAr();
+			}
+			scheduleArRefresh(token, serial);
+		}).catch(function () {
+			if (modal && serial === requestSerial) {
+				scheduleArRefresh(token, serial);
+			}
+		});
 	}
 
 	function applyHdWhenReady(promise, cfg, serial) {
 		if (!promise || !modal || !cfg || !cfg.hdToken) {
 			return;
 		}
-		setHdStatus(true, config.i18n.arWaiting || 'Preparing augmented reality…', modal._hdPercent || 8);
+		setHdStatus(true, config.i18n.loadingHd || 'Downloading the original model…', modal._hdPercent || 8);
 		if (modal._hdHooked === cfg.hdToken) {
 			return;
 		}
 		modal._hdHooked = cfg.hdToken;
 		promise.then(function (downloaded) {
-			if (!modal || serial !== requestSerial) {
+			if (!modal || modal.hidden || serial !== requestSerial || !modal._viewer) {
+				if (modal && modal._hdHooked === cfg.hdToken) {
+					modal._hdHooked = '';
+				}
 				return;
 			}
-			if (downloaded && downloaded.arUrl) {
-				modal.dataset.arUrl = downloaded.arUrl;
-				modal.dataset.hdUrlReady = '1';
+			rememberArUrl(cfg.hdToken, freshArUrl(cfg.hdToken) || (downloaded && downloaded.arUrl) || '');
+			modal.dataset.arUrl = freshArUrl(cfg.hdToken);
+			modal.dataset.hdUrlReady = modal.dataset.arUrl ? '1' : '';
+			scheduleArRefresh(cfg.hdToken, serial);
+			if (downloaded && downloaded.blob) {
+				modal.dataset.token = cfg.hdToken;
+				modal.dataset.blobUrl = blobUrlFor(downloaded);
+				setHdStatus(true, config.i18n.rendering || 'Preparing the high-quality model…', 100);
+				modal._viewer.src = modal.dataset.blobUrl;
+			} else {
+				modal._hdHooked = '';
+				setHdStatus(false);
+				maybeEnableAr();
 			}
-			modal._hdHooked = '';
-			setHdStatus(false);
-			maybeEnableAr();
-			continueAutoAr();
 		}).catch(function () {
 			if (modal && serial === requestSerial) {
 				modal._hdHooked = '';
@@ -1263,7 +1360,7 @@
 			return;
 		}
 
-		if (!arUrl) {
+		if (arUrl.indexOf('https://') !== 0) {
 			showArError();
 			return;
 		}
@@ -1272,7 +1369,7 @@
 		var cfg = modal._launcher ? configFrom(modal._launcher) : {};
 		viewer.setAttribute('ar-scale', cfg.fixed ? 'fixed' : 'auto');
 
-		// The high-quality file stays out of the page. The phone fetches that URL itself.
+		// The page keeps the decrypted model. The phone camera can only open an https address.
 		if (isIOS) {
 			viewer.setAttribute('ios-src', arUrl);
 			viewer.setAttribute('ar-modes', 'quick-look');
