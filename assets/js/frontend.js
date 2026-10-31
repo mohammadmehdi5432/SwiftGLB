@@ -777,8 +777,11 @@
 			viewer.setAttribute('pan-sensitivity', '0');
 			viewer.setAttribute('disable-pan', '');
 			viewer.setAttribute('interaction-prompt', 'none');
-			viewer.setAttribute('shadow-intensity', '0.85');
-			viewer.setAttribute('environment-image', 'neutral');
+			viewer.setAttribute('environment-image', 'legacy');
+			viewer.setAttribute('tone-mapping', 'commerce');
+			viewer.setAttribute('exposure', '1');
+			viewer.setAttribute('shadow-intensity', '1');
+			viewer.setAttribute('shadow-softness', '0.55');
 			viewer.setAttribute('ar', '');
 			viewer.setAttribute('ar-modes', 'webxr quick-look');
 			viewer.setAttribute('alt', cfg.title || '');
@@ -975,9 +978,11 @@
 
 	function applySceneLook(viewer) {
 		var dark = modal.dataset.scene === 'dark';
-		viewer.setAttribute('environment-image', 'neutral');
-		viewer.setAttribute('exposure', dark ? '0.75' : '1.12');
-		viewer.setAttribute('shadow-intensity', dark ? '0.3' : '0.9');
+		viewer.setAttribute('environment-image', 'legacy');
+		viewer.setAttribute('tone-mapping', 'commerce');
+		viewer.setAttribute('exposure', dark ? '0.62' : '1');
+		viewer.setAttribute('shadow-intensity', dark ? '0.5' : '1');
+		viewer.setAttribute('shadow-softness', dark ? '0.85' : '0.55');
 	}
 
 	function clearViewer() {
