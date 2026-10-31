@@ -100,6 +100,7 @@ class SwiftGLB_Frontend_Assets {
 				'day'                => __( 'Day', 'swiftglb-3d-ar-product-viewer' ),
 				'night'              => __( 'Night', 'swiftglb-3d-ar-product-viewer' ),
 				'ar'                 => __( 'Augmented reality', 'swiftglb-3d-ar-product-viewer' ),
+				'arWaiting'          => __( 'Augmented reality starts when the model has loaded', 'swiftglb-3d-ar-product-viewer' ),
 				'fullscreen'         => __( 'Full screen', 'swiftglb-3d-ar-product-viewer' ),
 				'exitFullscreen'     => __( 'Exit full screen', 'swiftglb-3d-ar-product-viewer' ),
 				'autoRotate'         => __( 'Auto-rotate', 'swiftglb-3d-ar-product-viewer' ),

@@ -53,6 +53,21 @@
 	box-shadow: 0 12px 28px rgba(37, 99, 235, 0.55);
 }
 
+.swiftglb-ar:disabled,
+.swiftglb-ar.is-waiting {
+	background: #9aa8bd;
+	color: #f8fafc;
+	box-shadow: none;
+	cursor: default;
+}
+
+.swiftglb-ar:disabled:hover,
+.swiftglb-ar.is-waiting:hover {
+	background: #9aa8bd;
+	transform: translateX(-50%);
+	box-shadow: none;
+}
+
 .swiftglb-ar span {
 	white-space: nowrap;
 }
