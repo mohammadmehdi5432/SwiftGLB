@@ -2,6 +2,12 @@
 
 WordPress plugin that shows WooCommerce products as interactive 3D models with augmented reality. The viewer and the model download only after a shopper clicks.
 
+The plugin is free and open source (GPLv2 or later). This repository is the source.
+
+## Live catalog
+
+See it on real products at [wpglb.site](https://wpglb.site/). Open a product and choose **View in 3D & AR**. The 3D file downloads on that click, not with the first page load. The catalog is the working example of this plugin.
+
 The source language is English. Strings use the `swiftglb-3d-ar-product-viewer` text domain, so WordPress.org can ship translations for each site language automatically.
 
 ## Requirements
