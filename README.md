@@ -6,7 +6,7 @@ The plugin is free and open source (GPLv2 or later). This repository is the sour
 
 ## Live demo
 
-The working catalog is [wpglb.site](https://wpglb.site/). Open a product and choose **View in 3D & AR**. The page shows the original model. On a phone, augmented reality opens that same file from a short-lived link, and the button stays inactive until the model has loaded.
+The working catalog is [wpglb.site](https://wpglb.site/). Open a product and choose **View in 3D & AR**. The page shows the original model. On an Android phone, augmented reality stays in Chrome and uses that same model. The button stays inactive until the model has loaded.
 
 The source language is English. Strings use the `swiftglb-3d-ar-product-viewer` text domain, so WordPress.org can ship translations for each site language automatically.
 

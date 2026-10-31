@@ -780,7 +780,7 @@
 			viewer.setAttribute('shadow-intensity', '0.85');
 			viewer.setAttribute('environment-image', 'neutral');
 			viewer.setAttribute('ar', '');
-			viewer.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
+			viewer.setAttribute('ar-modes', 'webxr quick-look');
 			viewer.setAttribute('alt', cfg.title || '');
 			viewer.setAttribute('ar-scale', cfg.fixed ? 'fixed' : 'auto');
 			viewer.setAttribute('bounds', 'tight');
@@ -1331,14 +1331,9 @@
 			ar.hidden = false;
 			ar.classList.add('is-attention');
 		}
-		var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-		if (isIOS) {
-			if (ar && typeof ar.focus === 'function') {
-				ar.focus();
-			}
-			return;
+		if (ar && typeof ar.focus === 'function') {
+			ar.focus();
 		}
-		startAR();
 	}
 
 	function startAR() {
@@ -1365,44 +1360,15 @@
 			return;
 		}
 
-		var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 		var cfg = modal._launcher ? configFrom(modal._launcher) : {};
 		viewer.setAttribute('ar-scale', cfg.fixed ? 'fixed' : 'auto');
 
-		// The page keeps the decrypted model. The phone camera can only open an https address.
-		if (isIOS) {
-			viewer.setAttribute('ios-src', arUrl);
-			viewer.setAttribute('ar-modes', 'quick-look');
-			try {
-				viewer.activateAR();
-			} catch (e) {
-				showArError();
-			}
-			return;
+		// Chrome WebXR presents the model already on the page. Scene Viewer is not in ar-modes, so this cannot open the Google app.
+		try {
+			viewer.activateAR();
+		} catch (e) {
+			showArError();
 		}
-
-		launchSceneViewer(arUrl);
-	}
-
-	function launchSceneViewer(url) {
-		var cfg = modal && modal._launcher ? configFrom(modal._launcher) : {};
-		var title = encodeURIComponent(cfg.title || document.title || 'Model');
-		var resizable = cfg.fixed ? 'false' : 'true';
-		var fallbackUrl = encodeURIComponent(window.location.href);
-		var intentUrl = 'intent://arvr.google.com/scene-viewer/1.0?file=' + encodeURIComponent(url)
-			+ '&mode=ar_preferred'
-			+ '&resizable=' + resizable
-			+ '&title=' + title
-			+ '#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;S.browser_fallback_url=' + fallbackUrl + ';end;';
-
-		var link = document.createElement('a');
-		link.href = intentUrl;
-		link.rel = 'noreferrer';
-		document.body.appendChild(link);
-		link.click();
-		window.setTimeout(function () {
-			link.remove();
-		}, 500);
 	}
 
 	function showDesktopQr() {
