@@ -4,7 +4,7 @@ Tags: woocommerce, 3d, product, gallery, ecommerce
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.6
+Stable tag: 1.1.10
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -32,9 +32,9 @@ The older shortcode [[woo_3d_viewer]] still works.
 
 = Translations =
 
-Every shopper-facing and admin string uses the `swiftglb-3d-ar-product-viewer` text domain. After this plugin is approved on WordPress.org, translations are delivered automatically for the language selected in **Settings → General**. Translation editors can contribute at [translate.wordpress.org](https://translate.wordpress.org/).
+Every shopper-facing and admin string uses the `swiftglb` text domain. After this plugin is approved on WordPress.org, translations are delivered automatically for the language selected in **Settings → General**. Translation editors can contribute at [translate.wordpress.org](https://translate.wordpress.org/).
 
-Before approval, or on a site that installs the plugin from GitHub, use a translation plugin such as Loco Translate and choose the text domain `swiftglb-3d-ar-product-viewer`.
+Before approval, or on a site that installs the plugin from GitHub, use a translation plugin such as Loco Translate and choose the text domain `swiftglb`.
 
 = Storage =
 
@@ -73,13 +73,25 @@ No. The product page shows a button. The 3D library and the model download after
 
 = How do I translate the plugin? =
 
-Set the site language in **Settings → General**. On WordPress.org, approved translations are installed automatically. Until a language pack exists, translate the `swiftglb-3d-ar-product-viewer` text domain with Loco Translate or another gettext tool.
+Set the site language in **Settings → General**. On WordPress.org, approved translations are installed automatically. Until a language pack exists, translate the `swiftglb` text domain with Loco Translate or another gettext tool.
 
 = What if I use Nginx? =
 
 If PHP cannot move the files outside the web root, copy the `location` rule from the admin notice into the site Nginx configuration. Do not deny the whole site.
 
 == Changelog ==
+
+= 1.1.10 =
+* Product lighting uses a studio setup so materials keep their color and depth.
+
+= 1.1.9 =
+* Augmented reality stays in Chrome instead of opening the Google app.
+
+= 1.1.8 =
+* The original model is shown on the page again. Augmented reality opens from a short-lived link.
+
+= 1.1.7 =
+* Augmented reality keeps the original model and waits until that model is ready.
 
 = 1.1.6 =
 * The frosted download notice stays on desktop. Phones keep the previous size.
@@ -107,10 +119,13 @@ If PHP cannot move the files outside the web root, copy the `location` rule from
 
 = 1.0.0 =
 * First public release of SwiftGLB – 3D & AR Product Viewer.
-* English source strings with the `swiftglb-3d-ar-product-viewer` text domain for WordPress translations.
+* English source strings with the `swiftglb` text domain for WordPress translations.
 * Protected GLB storage, product-page viewer, augmented reality, and desktop QR code.
 
 == Upgrade Notice ==
+
+= 1.1.10 =
+Studio lighting and in-browser augmented reality. Refresh the product page after updating.
 
 = 1.1.0 =
 High-quality models now replace the standard model automatically. Refresh the product page after updating.

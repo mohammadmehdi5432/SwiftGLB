@@ -262,14 +262,7 @@ class SwiftGLB_Storage_Service implements SwiftGLB_Storage_Interface {
 	 * @return bool
 	 */
 	private function move_file( $from, $to ) {
-		if ( @rename( $from, $to ) ) { // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
-			return true;
-		}
-		if ( ! @copy( $from, $to ) ) { // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
-			return false;
-		}
-		wp_delete_file( $from );
-		return ! is_file( $from );
+		return swiftglb_move_file( $from, $to );
 	}
 
 	/**
@@ -280,10 +273,10 @@ class SwiftGLB_Storage_Service implements SwiftGLB_Storage_Interface {
 	public function protect_directory() {
 		$dir = $this->get_dir();
 		if ( '' === $dir ) {
-			return new WP_Error( 'swiftglb_uploads', __( 'The WordPress uploads folder is not available.', 'swiftglb-3d-ar-product-viewer' ) );
+			return new WP_Error( 'swiftglb_uploads', __( 'The WordPress uploads folder is not available.', 'swiftglb' ) );
 		}
 		if ( ! wp_mkdir_p( $dir ) ) {
-			return new WP_Error( 'swiftglb_dir', __( 'The model folder could not be created.', 'swiftglb-3d-ar-product-viewer' ) );
+			return new WP_Error( 'swiftglb_dir', __( 'The model folder could not be created.', 'swiftglb' ) );
 		}
 
 		$htaccess = $dir . '/.htaccess';
@@ -394,12 +387,12 @@ class SwiftGLB_Storage_Service implements SwiftGLB_Storage_Interface {
 	 */
 	public function import_file( $source_path, $original_name ) {
 		if ( ! is_string( $source_path ) || ! is_readable( $source_path ) ) {
-			return new WP_Error( 'swiftglb_read', __( 'The file could not be read.', 'swiftglb-3d-ar-product-viewer' ) );
+			return new WP_Error( 'swiftglb_read', __( 'The file could not be read.', 'swiftglb' ) );
 		}
 
 		$size = filesize( $source_path );
 		if ( false === $size || $size < 12 || $size > $this->get_max_bytes() ) {
-			return new WP_Error( 'swiftglb_size', __( 'The file size is not allowed.', 'swiftglb-3d-ar-product-viewer' ) );
+			return new WP_Error( 'swiftglb_size', __( 'The file size is not allowed.', 'swiftglb' ) );
 		}
 
 		$ready = $this->protect_directory();
@@ -409,7 +402,7 @@ class SwiftGLB_Storage_Service implements SwiftGLB_Storage_Interface {
 
 		$handle = fopen( $source_path, 'rb' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 		if ( ! $handle ) {
-			return new WP_Error( 'swiftglb_read', __( 'The file could not be read.', 'swiftglb-3d-ar-product-viewer' ) );
+			return new WP_Error( 'swiftglb_read', __( 'The file could not be read.', 'swiftglb' ) );
 		}
 		$magic = fread( $handle, 4 ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fread
 		fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
@@ -417,7 +410,7 @@ class SwiftGLB_Storage_Service implements SwiftGLB_Storage_Interface {
 		$token = bin2hex( random_bytes( 16 ) );
 		$dest  = $this->get_path( $token );
 		if ( '' === $dest ) {
-			return new WP_Error( 'swiftglb_dir', __( 'The model folder is not valid.', 'swiftglb-3d-ar-product-viewer' ) );
+			return new WP_Error( 'swiftglb_dir', __( 'The model folder is not valid.', 'swiftglb' ) );
 		}
 
 		if ( SwiftGLB_Crypto::MAGIC === $magic ) {
@@ -426,20 +419,20 @@ class SwiftGLB_Storage_Service implements SwiftGLB_Storage_Interface {
 				return $plain;
 			}
 			if ( 'glTF' !== $plain ) {
-				return new WP_Error( 'swiftglb_format', __( 'This protected file belongs to another site, or it is damaged.', 'swiftglb-3d-ar-product-viewer' ) );
+				return new WP_Error( 'swiftglb_format', __( 'This protected file belongs to another site, or it is damaged.', 'swiftglb' ) );
 			}
 			$verified = $this->crypto->verify_file( $source_path );
 			if ( is_wp_error( $verified ) ) {
 				return $verified;
 			}
 			if ( ! copy( $source_path, $dest ) ) {
-				return new WP_Error( 'swiftglb_write', __( 'The file could not be saved.', 'swiftglb-3d-ar-product-viewer' ) );
+				return new WP_Error( 'swiftglb_write', __( 'The file could not be saved.', 'swiftglb' ) );
 			}
 			return $token;
 		}
 
 		if ( 'glTF' !== $magic ) {
-			return new WP_Error( 'swiftglb_format', __( 'Only a GLB file, or a protected plugin file (.w3d or .bin), is accepted.', 'swiftglb-3d-ar-product-viewer' ) );
+			return new WP_Error( 'swiftglb_format', __( 'Only a GLB file, or a protected plugin file (.w3d or .bin), is accepted.', 'swiftglb' ) );
 		}
 
 		$encrypt_path = $source_path;
@@ -570,12 +563,12 @@ class SwiftGLB_Storage_Service implements SwiftGLB_Storage_Interface {
 	private function open_stored( $token ) {
 		$path = $this->get_path( $token );
 		if ( '' === $path || ! is_file( $path ) || ! $this->is_inside_storage( $path ) ) {
-			return new WP_Error( 'swiftglb_missing', __( 'Model not found.', 'swiftglb-3d-ar-product-viewer' ) );
+			return new WP_Error( 'swiftglb_missing', __( 'Model not found.', 'swiftglb' ) );
 		}
 
 		$handle = fopen( $path, 'rb' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 		if ( ! $handle ) {
-			return new WP_Error( 'swiftglb_read', __( 'The model could not be read.', 'swiftglb-3d-ar-product-viewer' ) );
+			return new WP_Error( 'swiftglb_read', __( 'The model could not be read.', 'swiftglb' ) );
 		}
 
 		$header = $this->crypto->parse_header( $handle );
@@ -591,7 +584,7 @@ class SwiftGLB_Storage_Service implements SwiftGLB_Storage_Interface {
 		$needed     = (int) $header['size'] + ( ( $flags & SwiftGLB_Crypto::FLAG_MAC ) === SwiftGLB_Crypto::FLAG_MAC ? 32 : 0 );
 		if ( $remaining < $needed || $header['size'] > $this->get_max_bytes() ) {
 			fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
-			return new WP_Error( 'swiftglb_corrupt', __( 'The model file is damaged.', 'swiftglb-3d-ar-product-viewer' ) );
+			return new WP_Error( 'swiftglb_corrupt', __( 'The model file is damaged.', 'swiftglb' ) );
 		}
 
 		$verified = $this->crypto->verify_payload( $handle, $header['iv'], (int) $header['size'], $flags );

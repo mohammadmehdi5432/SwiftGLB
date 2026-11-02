@@ -10,7 +10,7 @@
  * Author URI:        https://github.com/mohammadmehdi5432
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       swiftglb-3d-ar-product-viewer
+ * Text Domain:       swiftglb
  * Domain Path:       /languages
  * Requires Plugins:  woocommerce
  * WC requires at least: 8.0
@@ -23,6 +23,35 @@ defined( 'ABSPATH' ) || exit;
 
 if ( defined( 'SWIFTGLB_FILE' ) ) {
 	return;
+}
+
+/**
+ * Move a file with the WordPress filesystem when PHP can write directly.
+ *
+ * @param string $from Source path.
+ * @param string $to   Destination path.
+ * @return bool
+ */
+function swiftglb_move_file( $from, $to ) {
+	if ( ! function_exists( 'get_filesystem_method' ) ) {
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+	}
+
+	if ( function_exists( 'get_filesystem_method' ) && 'direct' === get_filesystem_method() ) {
+		global $wp_filesystem;
+		if ( empty( $wp_filesystem ) ) {
+			WP_Filesystem();
+		}
+		if ( $wp_filesystem instanceof WP_Filesystem_Base && $wp_filesystem->move( $from, $to, true ) ) {
+			return true;
+		}
+	}
+
+	if ( ! @copy( $from, $to ) ) { // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_copy, WordPress.PHP.NoSilencedErrors.Discouraged
+		return false;
+	}
+	wp_delete_file( $from );
+	return ! is_file( $from );
 }
 
 define( 'SWIFTGLB_VERSION', '1.1.10' );
@@ -77,7 +106,7 @@ add_action(
 add_action(
 	'plugins_loaded',
 	static function () {
-		load_plugin_textdomain( 'swiftglb-3d-ar-product-viewer', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+		load_plugin_textdomain( 'swiftglb', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 		SwiftGLB_Plugin::migrate_legacy_brand();
 		if ( ! class_exists( 'WooCommerce' ) ) {
 			add_action(
@@ -86,7 +115,7 @@ add_action(
 					if ( ! current_user_can( 'activate_plugins' ) ) {
 						return;
 					}
-					echo '<div class="notice notice-error"><p>' . esc_html__( 'SwiftGLB needs WooCommerce to be active.', 'swiftglb-3d-ar-product-viewer' ) . '</p></div>';
+					echo '<div class="notice notice-error"><p>' . esc_html__( 'SwiftGLB needs WooCommerce to be active.', 'swiftglb' ) . '</p></div>';
 				}
 			);
 			return;
