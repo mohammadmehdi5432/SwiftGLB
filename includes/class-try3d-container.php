@@ -2,18 +2,18 @@
 /**
  * Dependency injection container.
  *
- * @package SwiftGLB
+ * @package Try3D
  */
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Service locator and DI container for SwiftGLB plugin components.
+ * Service locator and DI container for Try3D plugin components.
  */
-class SwiftGLB_Container {
+class Try3D_Container {
 
 	/**
-	 * @var SwiftGLB_Container|null
+	 * @var Try3D_Container|null
 	 */
 	private static $instance = null;
 
@@ -25,7 +25,7 @@ class SwiftGLB_Container {
 	/**
 	 * Get singleton container instance.
 	 *
-	 * @return SwiftGLB_Container
+	 * @return Try3D_Container
 	 */
 	public static function get_instance() {
 		if ( null === self::$instance ) {
@@ -47,20 +47,20 @@ class SwiftGLB_Container {
 	 * @return void
 	 */
 	private function register_services() {
-		$crypto     = new SwiftGLB_Crypto();
-		$storage    = new SwiftGLB_Storage_Service( $crypto );
-		$repository = new SwiftGLB_Model_Repository( $storage );
-		$validator  = new SwiftGLB_Access_Validator( $storage, $repository );
-		$rest       = new SwiftGLB_REST_Controller( $storage, $validator );
+		$crypto     = new Try3D_Crypto();
+		$storage    = new Try3D_Storage_Service( $crypto );
+		$repository = new Try3D_Model_Repository( $storage );
+		$validator  = new Try3D_Access_Validator( $storage, $repository );
+		$rest       = new Try3D_REST_Controller( $storage, $validator );
 
-		$admin_assets = new SwiftGLB_Admin_Assets( $storage );
-		$admin_panel  = new SwiftGLB_Admin_Panel( $storage );
-		$admin_ajax   = new SwiftGLB_Admin_Ajax( $storage );
-		$admin_saver  = new SwiftGLB_Admin_Saver( $repository, $storage );
+		$admin_assets = new Try3D_Admin_Assets( $storage );
+		$admin_panel  = new Try3D_Admin_Panel( $storage );
+		$admin_ajax   = new Try3D_Admin_Ajax( $storage );
+		$admin_saver  = new Try3D_Admin_Saver( $repository, $storage );
 
-		$frontend_assets   = new SwiftGLB_Frontend_Assets();
-		$frontend_renderer = new SwiftGLB_Frontend_Renderer( $storage );
-		$frontend_hooks    = new SwiftGLB_Frontend_Hooks( $frontend_renderer, $frontend_assets );
+		$frontend_assets   = new Try3D_Frontend_Assets();
+		$frontend_renderer = new Try3D_Frontend_Renderer( $storage );
+		$frontend_hooks    = new Try3D_Frontend_Hooks( $frontend_renderer, $frontend_assets );
 
 		$this->services['crypto']            = $crypto;
 		$this->services['storage']           = $storage;
@@ -98,84 +98,84 @@ class SwiftGLB_Container {
 	}
 
 	/**
-	 * @return SwiftGLB_Crypto_Interface
+	 * @return Try3D_Crypto_Interface
 	 */
 	public function get_crypto() {
 		return $this->services['crypto'];
 	}
 
 	/**
-	 * @return SwiftGLB_Storage_Interface
+	 * @return Try3D_Storage_Interface
 	 */
 	public function get_storage() {
 		return $this->services['storage'];
 	}
 
 	/**
-	 * @return SwiftGLB_Model_Repository_Interface
+	 * @return Try3D_Model_Repository_Interface
 	 */
 	public function get_repository() {
 		return $this->services['repository'];
 	}
 
 	/**
-	 * @return SwiftGLB_Access_Validator
+	 * @return Try3D_Access_Validator
 	 */
 	public function get_access_validator() {
 		return $this->services['access_validator'];
 	}
 
 	/**
-	 * @return SwiftGLB_REST_Controller
+	 * @return Try3D_REST_Controller
 	 */
 	public function get_rest_controller() {
 		return $this->services['rest_controller'];
 	}
 
 	/**
-	 * @return SwiftGLB_Admin_Assets
+	 * @return Try3D_Admin_Assets
 	 */
 	public function get_admin_assets() {
 		return $this->services['admin_assets'];
 	}
 
 	/**
-	 * @return SwiftGLB_Admin_Panel
+	 * @return Try3D_Admin_Panel
 	 */
 	public function get_admin_panel() {
 		return $this->services['admin_panel'];
 	}
 
 	/**
-	 * @return SwiftGLB_Admin_Ajax
+	 * @return Try3D_Admin_Ajax
 	 */
 	public function get_admin_ajax() {
 		return $this->services['admin_ajax'];
 	}
 
 	/**
-	 * @return SwiftGLB_Admin_Saver
+	 * @return Try3D_Admin_Saver
 	 */
 	public function get_admin_saver() {
 		return $this->services['admin_saver'];
 	}
 
 	/**
-	 * @return SwiftGLB_Frontend_Assets
+	 * @return Try3D_Frontend_Assets
 	 */
 	public function get_frontend_assets() {
 		return $this->services['frontend_assets'];
 	}
 
 	/**
-	 * @return SwiftGLB_Frontend_Renderer
+	 * @return Try3D_Frontend_Renderer
 	 */
 	public function get_frontend_renderer() {
 		return $this->services['frontend_renderer'];
 	}
 
 	/**
-	 * @return SwiftGLB_Frontend_Hooks
+	 * @return Try3D_Frontend_Hooks
 	 */
 	public function get_frontend_hooks() {
 		return $this->services['frontend_hooks'];

@@ -2,7 +2,7 @@
 /**
  * Model repository contract.
  *
- * @package SwiftGLB
+ * @package Try3D
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Interface for database persistence and querying of 3D models.
  */
-interface SwiftGLB_Model_Repository_Interface {
+interface Try3D_Model_Repository_Interface {
 
 	/**
 	 * Meta keys managed by the plugin.

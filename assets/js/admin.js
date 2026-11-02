@@ -1,27 +1,27 @@
 /**
- * SwiftGLB Admin Master Application
+ * Try3D Admin Master Application
  * Architecture: SOLID & Component-Based JavaScript
  * 
  * Modules:
- * - SwiftGLB_AdminUtils   (Utility formatters & DOM helpers)
- * - SwiftGLB_AdminUploader (File upload, real-time byte & percentage calculation)
- * - SwiftGLB_AdminPreview  (Live 3D preview modal lifecycle)
- * - SwiftGLB_AdminEvents   (Event delegation & drag-and-drop bindings)
+ * - Try3D_AdminUtils   (Utility formatters & DOM helpers)
+ * - Try3D_AdminUploader (File upload, real-time byte & percentage calculation)
+ * - Try3D_AdminPreview  (Live 3D preview modal lifecycle)
+ * - Try3D_AdminEvents   (Event delegation & drag-and-drop bindings)
  * 
- * @package SwiftGLB
+ * @package Try3D
  */
 
 (function (window, document) {
 	'use strict';
 
-	if (!window.swiftglbAdmin) {
+	if (!window.try3dAdmin) {
 		return;
 	}
 
-	var config = window.swiftglbAdmin;
+	var config = window.try3dAdmin;
 
 	// 1. Utilities Module
-	var Utils = window.SwiftGLB_AdminUtils || {
+	var Utils = window.Try3D_AdminUtils || {
 		fillTemplate: function (template, values) {
 			var text = template || '';
 			var list = values.slice();
@@ -45,7 +45,7 @@
 			return this.fillTemplate(units.megabytes || '%s MB', [(bytes / (1024 * 1024)).toFixed(1)]);
 		},
 		closestFile: function (node) {
-			return node && node.closest ? node.closest('.swiftglb-file') : null;
+			return node && node.closest ? node.closest('.try3d-file') : null;
 		}
 	};
 
@@ -56,50 +56,50 @@
 		}
 
 		AdminUploader.prototype.setBusy = function (wrap, busy) {
-			var button = wrap.querySelector('.swiftglb-upload-btn');
+			var button = wrap.querySelector('.try3d-upload-btn');
 			if (!button) return;
 			button.disabled = busy;
 			button.textContent = busy ? this.config.uploading : this.config.upload;
 		};
 
 		AdminUploader.prototype.showError = function (wrap, message) {
-			var slot = wrap.querySelector('.swiftglb-file-error');
+			var slot = wrap.querySelector('.try3d-file-error');
 			if (slot) {
 				slot.textContent = message || '';
 			}
 		};
 
 		AdminUploader.prototype.getProgressElements = function (wrap) {
-			var prog = wrap.querySelector('.swiftglb-upload-progress');
+			var prog = wrap.querySelector('.try3d-upload-progress');
 			if (!prog) {
 				prog = document.createElement('div');
-				prog.className = 'swiftglb-upload-progress';
+				prog.className = 'try3d-upload-progress';
 				prog.innerHTML = ''
-					+ '<div class="swiftglb-upload-bar"><div class="swiftglb-upload-fill"></div></div>'
-					+ '<div class="swiftglb-upload-meta">'
-					+ '  <span class="swiftglb-upload-status">Uploading the file…</span>'
-					+ '  <div class="swiftglb-upload-numbers">'
-					+ '    <span class="swiftglb-upload-bytes"></span>'
-					+ '    <span class="swiftglb-upload-percent">0%</span>'
+					+ '<div class="try3d-upload-bar"><div class="try3d-upload-fill"></div></div>'
+					+ '<div class="try3d-upload-meta">'
+					+ '  <span class="try3d-upload-status">Uploading the file…</span>'
+					+ '  <div class="try3d-upload-numbers">'
+					+ '    <span class="try3d-upload-bytes"></span>'
+					+ '    <span class="try3d-upload-percent">0%</span>'
 					+ '  </div>'
 					+ '</div>';
 				wrap.appendChild(prog);
 			}
 			return {
 				wrap: prog,
-				fill: prog.querySelector('.swiftglb-upload-fill'),
-				status: prog.querySelector('.swiftglb-upload-status'),
-				bytes: prog.querySelector('.swiftglb-upload-bytes'),
-				percent: prog.querySelector('.swiftglb-upload-percent')
+				fill: prog.querySelector('.try3d-upload-fill'),
+				status: prog.querySelector('.try3d-upload-status'),
+				bytes: prog.querySelector('.try3d-upload-bytes'),
+				percent: prog.querySelector('.try3d-upload-percent')
 			};
 		};
 
 		AdminUploader.prototype.assignFile = function (wrap, payload) {
-			var token = wrap.querySelector('.swiftglb-token');
-			var filename = wrap.querySelector('.swiftglb-filename');
-			var label = wrap.querySelector('.swiftglb-file-name');
-			var remove = wrap.querySelector('.swiftglb-remove-btn');
-			var preview = wrap.querySelector('.swiftglb-preview-btn');
+			var token = wrap.querySelector('.try3d-token');
+			var filename = wrap.querySelector('.try3d-filename');
+			var label = wrap.querySelector('.try3d-file-name');
+			var remove = wrap.querySelector('.try3d-remove-btn');
+			var preview = wrap.querySelector('.try3d-preview-btn');
 
 			if (token) {
 				token.value = payload.token || '';
@@ -127,7 +127,7 @@
 
 			var self = this;
 			var ext = (file.name.split('.').pop() || '').toLowerCase();
-			var input = wrap.querySelector('.swiftglb-file-input');
+			var input = wrap.querySelector('.try3d-file-input');
 			if (['glb', 'w3d', 'bin'].indexOf(ext) === -1) {
 				if (input) {
 					input.value = '';
@@ -174,7 +174,7 @@
 
 			xhr.addEventListener('load', function () {
 				self.setBusy(wrap, false);
-				var input = wrap.querySelector('.swiftglb-file-input');
+				var input = wrap.querySelector('.try3d-file-input');
 				if (input) {
 					input.value = '';
 				}
@@ -205,7 +205,7 @@
 			});
 
 			var body = new FormData();
-			body.append('action', 'swiftglb_upload');
+			body.append('action', 'try3d_upload');
 			body.append('nonce', self.config.nonce);
 			body.append('file', file);
 			xhr.send(body);
@@ -244,25 +244,25 @@
 			if (this.modal) return this.modal;
 
 			var modal = document.createElement('div');
-			modal.className = 'swiftglb-admin-modal';
+			modal.className = 'try3d-admin-modal';
 			modal.hidden = true;
 			modal.innerHTML = ''
-				+ '<div class="swiftglb-admin-modal__backdrop"></div>'
-				+ '<div class="swiftglb-admin-modal__box">'
-				+ '  <div class="swiftglb-admin-modal__head">'
+				+ '<div class="try3d-admin-modal__backdrop"></div>'
+				+ '<div class="try3d-admin-modal__box">'
+				+ '  <div class="try3d-admin-modal__head">'
 				+ '    <h3>' + (this.config.previewTitle || '3D model preview') + '</h3>'
-				+ '    <button type="button" class="swiftglb-admin-modal__close">&times;</button>'
+				+ '    <button type="button" class="try3d-admin-modal__close">&times;</button>'
 				+ '  </div>'
-				+ '  <div class="swiftglb-admin-modal__body">'
-				+ '    <div class="swiftglb-admin-modal__loader">' + this.config.uploading + '</div>'
+				+ '  <div class="try3d-admin-modal__body">'
+				+ '    <div class="try3d-admin-modal__loader">' + this.config.uploading + '</div>'
 				+ '  </div>'
 				+ '</div>';
 
 			var self = this;
-			modal.querySelector('.swiftglb-admin-modal__close').addEventListener('click', function () {
+			modal.querySelector('.try3d-admin-modal__close').addEventListener('click', function () {
 				self.close();
 			});
-			modal.querySelector('.swiftglb-admin-modal__backdrop').addEventListener('click', function () {
+			modal.querySelector('.try3d-admin-modal__backdrop').addEventListener('click', function () {
 				self.close();
 			});
 
@@ -276,15 +276,15 @@
 
 			var self = this;
 			var modal = this.ensureModal();
-			var body = modal.querySelector('.swiftglb-admin-modal__body');
+			var body = modal.querySelector('.try3d-admin-modal__body');
 			modal.hidden = false;
 			body.innerHTML = '';
 			var loader = document.createElement('div');
-			loader.className = 'swiftglb-admin-modal__loader';
+			loader.className = 'try3d-admin-modal__loader';
 			loader.textContent = this.config.previewLoading || 'Loading the model…';
 			body.appendChild(loader);
 
-			var streamUrl = this.config.ajax + '?action=swiftglb_preview&nonce=' + encodeURIComponent(this.config.preview || '') + '&token=' + encodeURIComponent(token);
+			var streamUrl = this.config.ajax + '?action=try3d_preview&nonce=' + encodeURIComponent(this.config.preview || '') + '&token=' + encodeURIComponent(token);
 
 			this.loadViewerScript().then(function () {
 				body.innerHTML = '';
@@ -301,7 +301,7 @@
 			}).catch(function () {
 				body.innerHTML = '';
 				var failed = document.createElement('div');
-				failed.className = 'swiftglb-admin-modal__loader';
+				failed.className = 'try3d-admin-modal__loader';
 				failed.style.color = '#d63638';
 				failed.textContent = self.config.previewError || 'The preview could not be loaded.';
 				body.appendChild(failed);
@@ -311,7 +311,7 @@
 		AdminPreview.prototype.close = function () {
 			if (this.modal) {
 				this.modal.hidden = true;
-				var body = this.modal.querySelector('.swiftglb-admin-modal__body');
+				var body = this.modal.querySelector('.try3d-admin-modal__body');
 				if (body) {
 					body.innerHTML = '';
 				}
@@ -330,36 +330,36 @@
 	var preview = new Preview(config);
 
 	document.addEventListener('click', function (event) {
-		var uploadButton = event.target.closest ? event.target.closest('.swiftglb-upload-btn') : null;
+		var uploadButton = event.target.closest ? event.target.closest('.try3d-upload-btn') : null;
 		if (uploadButton) {
 			event.preventDefault();
 			var wrap = Utils.closestFile(uploadButton);
-			var input = wrap && wrap.querySelector('.swiftglb-file-input');
+			var input = wrap && wrap.querySelector('.try3d-file-input');
 			if (input) {
 				input.click();
 			}
 			return;
 		}
 
-		var previewButton = event.target.closest ? event.target.closest('.swiftglb-preview-btn') : null;
+		var previewButton = event.target.closest ? event.target.closest('.try3d-preview-btn') : null;
 		if (previewButton) {
 			event.preventDefault();
 			var pWrap = Utils.closestFile(previewButton);
-			var tokenInput = pWrap && pWrap.querySelector('.swiftglb-token');
+			var tokenInput = pWrap && pWrap.querySelector('.try3d-token');
 			if (tokenInput && tokenInput.value) {
 				preview.open(tokenInput.value);
 			}
 			return;
 		}
 
-		var removeButton = event.target.closest ? event.target.closest('.swiftglb-remove-btn') : null;
+		var removeButton = event.target.closest ? event.target.closest('.try3d-remove-btn') : null;
 		if (removeButton) {
 			event.preventDefault();
 			var fileWrap = Utils.closestFile(removeButton);
 			if (fileWrap) {
 				uploader.assignFile(fileWrap, {});
 				uploader.showError(fileWrap, '');
-				var prog = fileWrap.querySelector('.swiftglb-upload-progress');
+				var prog = fileWrap.querySelector('.try3d-upload-progress');
 				if (prog) {
 					prog.hidden = true;
 				}
@@ -367,7 +367,7 @@
 			return;
 		}
 
-		if (event.target.classList && event.target.classList.contains('swiftglb-shortcode')) {
+		if (event.target.classList && event.target.classList.contains('try3d-shortcode')) {
 			event.target.select();
 		}
 	});
@@ -379,7 +379,7 @@
 	});
 
 	document.addEventListener('change', function (event) {
-		if (!event.target.classList || !event.target.classList.contains('swiftglb-file-input')) {
+		if (!event.target.classList || !event.target.classList.contains('try3d-file-input')) {
 			return;
 		}
 		var wrap = Utils.closestFile(event.target);

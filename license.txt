@@ -1,4 +1,4 @@
-SwiftGLB – 3D & AR Product Viewer
+Try3D – 3D & AR Product Viewer
 Copyright (C) 2026 mohammadmehdi5432
 
 This program is free software; you can redistribute it and/or modify

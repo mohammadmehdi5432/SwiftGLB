@@ -2,7 +2,7 @@
 /**
  * Model repository implementation.
  *
- * @package SwiftGLB
+ * @package Try3D
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,29 +10,29 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Handles database persistence, querying, and lifecycle of 3D model metadata.
  */
-class SwiftGLB_Model_Repository implements SwiftGLB_Model_Repository_Interface {
+class Try3D_Model_Repository implements Try3D_Model_Repository_Interface {
 
-	const META_TOKEN       = '_swiftglb_token';
-	const META_FILENAME    = '_swiftglb_filename';
-	const META_HD_TOKEN    = '_swiftglb_hd_token';
-	const META_HD_FILENAME = '_swiftglb_hd_filename';
-	const META_HD_AUTO     = '_swiftglb_hd_auto';
-	const META_ENABLED     = '_swiftglb_enabled';
-	const META_ORBIT       = '_swiftglb_orbit_lock';
-	const META_AR_FIXED    = '_swiftglb_ar_fixed';
-	const META_COLOR       = '_swiftglb_color';
-	const META_AUTO_ROTATE = '_swiftglb_auto_rotate';
-	const META_BUTTON_TEXT = '_swiftglb_button_text';
+	const META_TOKEN       = '_try3d_token';
+	const META_FILENAME    = '_try3d_filename';
+	const META_HD_TOKEN    = '_try3d_hd_token';
+	const META_HD_FILENAME = '_try3d_hd_filename';
+	const META_HD_AUTO     = '_try3d_hd_auto';
+	const META_ENABLED     = '_try3d_enabled';
+	const META_ORBIT       = '_try3d_orbit_lock';
+	const META_AR_FIXED    = '_try3d_ar_fixed';
+	const META_COLOR       = '_try3d_color';
+	const META_AUTO_ROTATE = '_try3d_auto_rotate';
+	const META_BUTTON_TEXT = '_try3d_button_text';
 
 	/**
-	 * @var SwiftGLB_Storage_Interface
+	 * @var Try3D_Storage_Interface
 	 */
 	private $storage;
 
 	/**
-	 * @param SwiftGLB_Storage_Interface $storage Storage service.
+	 * @param Try3D_Storage_Interface $storage Storage service.
 	 */
-	public function __construct( SwiftGLB_Storage_Interface $storage ) {
+	public function __construct( Try3D_Storage_Interface $storage ) {
 		$this->storage = $storage;
 	}
 
@@ -123,10 +123,10 @@ class SwiftGLB_Model_Repository implements SwiftGLB_Model_Repository_Interface {
 	 * @return void
 	 */
 	public function cleanup_orphans() {
-		if ( false !== get_transient( 'swiftglb_cleanup' ) ) {
+		if ( false !== get_transient( 'try3d_cleanup' ) ) {
 			return;
 		}
-		set_transient( 'swiftglb_cleanup', 1, DAY_IN_SECONDS );
+		set_transient( 'try3d_cleanup', 1, DAY_IN_SECONDS );
 
 		$dir = $this->storage->get_dir();
 		if ( '' === $dir || ! is_dir( $dir ) ) {

@@ -2,7 +2,7 @@
 /**
  * Plugin bootstrap.
  *
- * @package SwiftGLB
+ * @package Try3D
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,20 +10,20 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Wires the pieces together.
  */
-class SwiftGLB_Plugin {
+class Try3D_Plugin {
 
 	/**
 	 * @return void
 	 */
 	public static function init() {
-		load_plugin_textdomain( 'swiftglb', false, dirname( plugin_basename( SWIFTGLB_FILE ) ) . '/languages' );
+		load_plugin_textdomain( 'try3d-viewer', false, dirname( plugin_basename( TRY3D_FILE ) ) . '/languages' );
 		self::migrate_legacy_brand();
-		SwiftGLB_Admin::init();
-		SwiftGLB_REST::init();
-		SwiftGLB_Frontend::init();
+		Try3D_Admin::init();
+		Try3D_REST::init();
+		Try3D_Frontend::init();
 
 		if ( is_admin() ) {
-			add_action( 'admin_init', array( 'SwiftGLB_Storage', 'cleanup_orphans' ) );
+			add_action( 'admin_init', array( 'Try3D_Storage', 'cleanup_orphans' ) );
 		}
 	}
 
@@ -32,40 +32,53 @@ class SwiftGLB_Plugin {
 	 */
 	public static function activate() {
 		self::migrate_legacy_brand();
-		if ( ! get_option( 'swiftglb_secret' ) ) {
-			add_option( 'swiftglb_secret', bin2hex( random_bytes( 32 ) ), '', false );
+		if ( ! get_option( 'try3d_secret' ) ) {
+			add_option( 'try3d_secret', bin2hex( random_bytes( 32 ) ), '', false );
 		}
-		SwiftGLB_Storage::protect_directory();
+		Try3D_Storage::protect_directory();
 	}
 
 	/**
-	 * Keep models readable after the SwiftGLB rename.
+	 * Keep models readable after the Try3D rename.
 	 *
 	 * @return void
 	 */
 	public static function migrate_legacy_brand() {
-		$legacy_secret = get_option( '3dsaz_secret' );
-		if ( is_string( $legacy_secret ) && strlen( $legacy_secret ) >= 64 && ! get_option( 'swiftglb_secret' ) ) {
-			add_option( 'swiftglb_secret', $legacy_secret, '', false );
+		foreach ( array( 'swiftglb_secret', '3dsaz_secret' ) as $legacy_key ) {
+			$legacy_secret = get_option( $legacy_key );
+			if ( is_string( $legacy_secret ) && strlen( $legacy_secret ) >= 64 && ! get_option( 'try3d_secret' ) ) {
+				add_option( 'try3d_secret', $legacy_secret, '', false );
+			}
 		}
 
-		if ( get_option( 'swiftglb_brand_migrated' ) ) {
+		if ( get_option( 'try3d_brand_migrated' ) ) {
 			return;
 		}
 
 		global $wpdb;
 		$map = array(
-			'_3dsaz_token'       => '_swiftglb_token',
-			'_3dsaz_filename'    => '_swiftglb_filename',
-			'_3dsaz_hd_token'    => '_swiftglb_hd_token',
-			'_3dsaz_hd_filename' => '_swiftglb_hd_filename',
-			'_3dsaz_hd_auto'     => '_swiftglb_hd_auto',
-			'_3dsaz_enabled'     => '_swiftglb_enabled',
-			'_3dsaz_orbit_lock'  => '_swiftglb_orbit_lock',
-			'_3dsaz_ar_fixed'    => '_swiftglb_ar_fixed',
-			'_3dsaz_color'       => '_swiftglb_color',
-			'_3dsaz_auto_rotate' => '_swiftglb_auto_rotate',
-			'_3dsaz_button_text' => '_swiftglb_button_text',
+			'_swiftglb_token'       => '_try3d_token',
+			'_swiftglb_filename'    => '_try3d_filename',
+			'_swiftglb_hd_token'    => '_try3d_hd_token',
+			'_swiftglb_hd_filename' => '_try3d_hd_filename',
+			'_swiftglb_hd_auto'     => '_try3d_hd_auto',
+			'_swiftglb_enabled'     => '_try3d_enabled',
+			'_swiftglb_orbit_lock'  => '_try3d_orbit_lock',
+			'_swiftglb_ar_fixed'    => '_try3d_ar_fixed',
+			'_swiftglb_color'       => '_try3d_color',
+			'_swiftglb_auto_rotate' => '_try3d_auto_rotate',
+			'_swiftglb_button_text' => '_try3d_button_text',
+			'_3dsaz_token'          => '_try3d_token',
+			'_3dsaz_filename'       => '_try3d_filename',
+			'_3dsaz_hd_token'       => '_try3d_hd_token',
+			'_3dsaz_hd_filename'    => '_try3d_hd_filename',
+			'_3dsaz_hd_auto'        => '_try3d_hd_auto',
+			'_3dsaz_enabled'        => '_try3d_enabled',
+			'_3dsaz_orbit_lock'     => '_try3d_orbit_lock',
+			'_3dsaz_ar_fixed'       => '_try3d_ar_fixed',
+			'_3dsaz_color'          => '_try3d_color',
+			'_3dsaz_auto_rotate'    => '_try3d_auto_rotate',
+			'_3dsaz_button_text'    => '_try3d_button_text',
 		);
 		foreach ( $map as $from => $to ) {
 			$wpdb->update(
@@ -77,7 +90,7 @@ class SwiftGLB_Plugin {
 			);
 		}
 
-		update_option( 'swiftglb_brand_migrated', '1', false );
+		update_option( 'try3d_brand_migrated', '1', false );
 	}
 
 	/**
@@ -122,7 +135,7 @@ class SwiftGLB_Plugin {
 		if ( $handle ) {
 			fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 		}
-		if ( 'glTF' !== $magic && SwiftGLB_Storage::MAGIC !== $magic ) {
+		if ( 'glTF' !== $magic && Try3D_Storage::MAGIC !== $magic ) {
 			return $data;
 		}
 

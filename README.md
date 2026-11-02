@@ -1,14 +1,14 @@
-# SwiftGLB – 3D & AR Product Viewer
+# Try3D – 3D & AR Product Viewer
 
 WordPress plugin that shows WooCommerce products as interactive 3D models with augmented reality. The viewer and the model download only after a shopper clicks.
 
-The plugin is free and open source (GPLv2 or later). This repository is the source.
+The plugin is free and open source (GPLv2 or later). This repository is the source. The plugin does not call try3d.site and does not need an account there.
 
 ## Live demo
 
-The working catalog is [wpglb.site](https://wpglb.site/). Open a product and choose **View in 3D & AR**. The page shows the original model. On an Android phone, augmented reality stays in Chrome and uses that same model. The button stays inactive until the model has loaded.
+The working catalog is [try3d.site](https://try3d.site/). Open a product and choose **View in 3D & AR**. The page shows the original model. On an Android phone, augmented reality stays in Chrome and uses that same model. The button stays inactive until the model has loaded.
 
-The source language is English. Strings use the `swiftglb` text domain, so WordPress.org can ship translations for each site language automatically.
+The source language is English. Strings use the `try3d-viewer` text domain, so WordPress.org can ship translations for each site language automatically.
 
 ## Requirements
 
@@ -18,17 +18,17 @@ The source language is English. Strings use the `swiftglb` text domain, so WordP
 
 ## Shortcode
 
-`[swiftglb_viewer]`
+`[try3d_viewer]`
 
-`[swiftglb_viewer id="123" mode="inline"]`
+`[try3d_viewer id="123" mode="inline"]`
 
-`[woo_3d_viewer]` remains available.
+`[swiftglb_viewer]` and `[woo_3d_viewer]` remain available.
 
 ## Translate
 
 On WordPress.org, choose the site language under **Settings → General**. Language packs are installed for this text domain when translators publish them.
 
-From GitHub, translate `swiftglb` with Loco Translate or any gettext tool. Put compiled files in `languages/` as `swiftglb-{locale}.mo`.
+From GitHub, translate `try3d-viewer` with Loco Translate or any gettext tool. Put compiled files in `languages/` as `try3d-viewer-{locale}.mo`.
 
 ## License
 

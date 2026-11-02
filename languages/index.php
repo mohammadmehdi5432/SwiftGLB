@@ -2,7 +2,7 @@
 /**
  * Silence is golden.
  *
- * @package SwiftGLB
+ * @package Try3D
  */
 
 defined( 'ABSPATH' ) || exit;

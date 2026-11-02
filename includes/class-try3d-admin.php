@@ -2,7 +2,7 @@
 /**
  * Admin orchestrator & facade.
  *
- * @package SwiftGLB
+ * @package Try3D
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Connects admin hooks and delegates tasks to specialized admin components.
  */
-class SwiftGLB_Admin {
+class Try3D_Admin {
 
 	/**
 	 * Register admin hooks.
@@ -18,7 +18,7 @@ class SwiftGLB_Admin {
 	 * @return void
 	 */
 	public static function init() {
-		$container = SwiftGLB_Container::get_instance();
+		$container = Try3D_Container::get_instance();
 
 		add_action( 'admin_enqueue_scripts', array( $container->get_admin_assets(), 'enqueue' ) );
 		add_filter( 'woocommerce_product_data_tabs', array( $container->get_admin_panel(), 'add_tab' ) );
@@ -31,8 +31,8 @@ class SwiftGLB_Admin {
 		add_action( 'deleted_post', array( $container->get_admin_saver(), 'forget_deleted_product' ), 10, 2 );
 		add_action( 'admin_notices', array( __CLASS__, 'storage_notice' ) );
 
-		add_action( 'wp_ajax_swiftglb_upload', array( $container->get_admin_ajax(), 'handle_upload' ) );
-		add_action( 'wp_ajax_swiftglb_preview', array( $container->get_admin_ajax(), 'handle_preview' ) );
+		add_action( 'wp_ajax_try3d_upload', array( $container->get_admin_ajax(), 'handle_upload' ) );
+		add_action( 'wp_ajax_try3d_preview', array( $container->get_admin_ajax(), 'handle_preview' ) );
 	}
 
 	/**
@@ -40,14 +40,14 @@ class SwiftGLB_Admin {
 	 * @return array<string,array<string,mixed>>
 	 */
 	public static function tab( $tabs ) {
-		return SwiftGLB_Container::get_instance()->get_admin_panel()->add_tab( $tabs );
+		return Try3D_Container::get_instance()->get_admin_panel()->add_tab( $tabs );
 	}
 
 	/**
 	 * @return void
 	 */
 	public static function panel() {
-		SwiftGLB_Container::get_instance()->get_admin_panel()->render_panel();
+		Try3D_Container::get_instance()->get_admin_panel()->render_panel();
 	}
 
 	/**
@@ -57,7 +57,7 @@ class SwiftGLB_Admin {
 	 * @return void
 	 */
 	public static function variation_fields( $loop, $variation_data, $variation ) {
-		SwiftGLB_Container::get_instance()->get_admin_panel()->render_variation_fields( $loop, $variation_data, $variation );
+		Try3D_Container::get_instance()->get_admin_panel()->render_variation_fields( $loop, $variation_data, $variation );
 	}
 
 	/**
@@ -68,7 +68,7 @@ class SwiftGLB_Admin {
 	 * @return void
 	 */
 	public static function file_field( $token_name, $filename_name, $token, $filename ) {
-		SwiftGLB_Container::get_instance()->get_admin_panel()->render_file_field( $token_name, $filename_name, $token, $filename );
+		Try3D_Container::get_instance()->get_admin_panel()->render_file_field( $token_name, $filename_name, $token, $filename );
 	}
 
 	/**
@@ -76,7 +76,7 @@ class SwiftGLB_Admin {
 	 * @return void
 	 */
 	public static function save_product( $post_id ) {
-		SwiftGLB_Container::get_instance()->get_admin_saver()->save_product( $post_id );
+		Try3D_Container::get_instance()->get_admin_saver()->save_product( $post_id );
 	}
 
 	/**
@@ -85,7 +85,7 @@ class SwiftGLB_Admin {
 	 * @return void
 	 */
 	public static function save_variation( $variation_id, $loop ) {
-		SwiftGLB_Container::get_instance()->get_admin_saver()->save_variation( $variation_id, $loop );
+		Try3D_Container::get_instance()->get_admin_saver()->save_variation( $variation_id, $loop );
 	}
 
 	/**
@@ -93,21 +93,21 @@ class SwiftGLB_Admin {
 	 * @return void
 	 */
 	public static function assets( $hook ) {
-		SwiftGLB_Container::get_instance()->get_admin_assets()->enqueue( $hook );
+		Try3D_Container::get_instance()->get_admin_assets()->enqueue( $hook );
 	}
 
 	/**
 	 * @return void
 	 */
 	public static function ajax_upload() {
-		SwiftGLB_Container::get_instance()->get_admin_ajax()->handle_upload();
+		Try3D_Container::get_instance()->get_admin_ajax()->handle_upload();
 	}
 
 	/**
 	 * @return void
 	 */
 	public static function preview_model() {
-		SwiftGLB_Container::get_instance()->get_admin_ajax()->handle_preview();
+		Try3D_Container::get_instance()->get_admin_ajax()->handle_preview();
 	}
 
 	/**
@@ -116,7 +116,7 @@ class SwiftGLB_Admin {
 	 * @return void
 	 */
 	public static function forget_deleted_product( $post_id, $post = null ) {
-		SwiftGLB_Container::get_instance()->get_admin_saver()->forget_deleted_product( $post_id, $post );
+		Try3D_Container::get_instance()->get_admin_saver()->forget_deleted_product( $post_id, $post );
 	}
 
 	/**
@@ -129,12 +129,17 @@ class SwiftGLB_Admin {
 			return;
 		}
 
+		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+		if ( ! $screen || ! in_array( $screen->id, array( 'plugins', 'product', 'edit-product' ), true ) ) {
+			return;
+		}
+
 		$software = isset( $_SERVER['SERVER_SOFTWARE'] ) ? strtolower( (string) $_SERVER['SERVER_SOFTWARE'] ) : '';
 		if ( false === strpos( $software, 'nginx' ) ) {
 			return;
 		}
 
-		$storage = SwiftGLB_Container::get_instance()->get_storage();
+		$storage = Try3D_Container::get_instance()->get_storage();
 		if ( ! $storage->is_inside_web_root() ) {
 			return;
 		}
@@ -148,8 +153,8 @@ class SwiftGLB_Admin {
 		if ( '/' === $rel ) {
 			return;
 		}
-		echo '<div class="notice notice-warning"><p>';
-		echo esc_html__( '3D models are still inside the web root, and Nginx ignores .htaccess files. Deny this path in the Nginx configuration so model files cannot be downloaded directly.', 'swiftglb' );
+		echo '<div class="notice notice-warning is-dismissible"><p>';
+		echo esc_html__( '3D models are still inside the web root, and Nginx ignores .htaccess files. Deny this path in the Nginx configuration so model files cannot be downloaded directly.', 'try3d-viewer' );
 		echo '</p><p><code>';
 		echo esc_html( 'location ^~ ' . trailingslashit( $rel ) . ' { deny all; }' );
 		echo '</code></p></div>';

@@ -2,7 +2,7 @@
 /**
  * Cryptographic service implementation.
  *
- * @package SwiftGLB
+ * @package Try3D
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Encrypts, decrypts, and manages headers for obfuscated 3D model files.
  */
-class SwiftGLB_Crypto implements SwiftGLB_Crypto_Interface {
+class Try3D_Crypto implements Try3D_Crypto_Interface {
 
 	const MAGIC    = 'W3D1';
 	const VERSION  = 1;
@@ -31,12 +31,15 @@ class SwiftGLB_Crypto implements SwiftGLB_Crypto_Interface {
 			return $this->cached_secret;
 		}
 
-		$secret = get_option( 'swiftglb_secret' );
+		$secret = get_option( 'try3d_secret' );
 		if ( ! is_string( $secret ) || strlen( $secret ) < 64 ) {
-			$legacy = get_option( '3dsaz_secret' );
-			if ( is_string( $legacy ) && strlen( $legacy ) >= 64 ) {
-				$secret = $legacy;
-				update_option( 'swiftglb_secret', $secret, false );
+			foreach ( array( 'swiftglb_secret', '3dsaz_secret' ) as $legacy_key ) {
+				$legacy = get_option( $legacy_key );
+				if ( is_string( $legacy ) && strlen( $legacy ) >= 64 ) {
+					$secret = $legacy;
+					update_option( 'try3d_secret', $secret, false );
+					break;
+				}
 			}
 		}
 		if ( is_string( $secret ) && strlen( $secret ) >= 64 ) {
@@ -45,7 +48,7 @@ class SwiftGLB_Crypto implements SwiftGLB_Crypto_Interface {
 		}
 
 		$secret = bin2hex( random_bytes( 32 ) );
-		update_option( 'swiftglb_secret', $secret, false );
+		update_option( 'try3d_secret', $secret, false );
 		$this->cached_secret = $secret;
 		return $secret;
 	}
@@ -77,14 +80,14 @@ class SwiftGLB_Crypto implements SwiftGLB_Crypto_Interface {
 	public function encrypt_file( $source_path, $dest_path, $name, $size ) {
 		$input = fopen( $source_path, 'rb' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 		if ( ! $input ) {
-			return new WP_Error( 'swiftglb_read', __( 'The file could not be read.', 'swiftglb' ) );
+			return new WP_Error( 'try3d_read', __( 'The file could not be read.', 'try3d-viewer' ) );
 		}
 
 		$temporary = $dest_path . '.tmp';
 		$output    = fopen( $temporary, 'wb' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 		if ( ! $output ) {
 			fclose( $input ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
-			return new WP_Error( 'swiftglb_write', __( 'The file could not be saved.', 'swiftglb' ) );
+			return new WP_Error( 'try3d_write', __( 'The file could not be saved.', 'try3d-viewer' ) );
 		}
 
 		$iv      = random_bytes( 16 );
@@ -95,7 +98,7 @@ class SwiftGLB_Crypto implements SwiftGLB_Crypto_Interface {
 			fclose( $input ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 			fclose( $output ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 			wp_delete_file( $temporary );
-			return new WP_Error( 'swiftglb_key', __( 'The key could not be created.', 'swiftglb' ) );
+			return new WP_Error( 'try3d_key', __( 'The key could not be created.', 'try3d-viewer' ) );
 		}
 
 		$header = self::MAGIC
@@ -135,12 +138,12 @@ class SwiftGLB_Crypto implements SwiftGLB_Crypto_Interface {
 
 		if ( ! $ok || $offset !== $size ) {
 			wp_delete_file( $temporary );
-			return new WP_Error( 'swiftglb_write', __( 'Protecting the file did not finish.', 'swiftglb' ) );
+			return new WP_Error( 'try3d_write', __( 'Protecting the file did not finish.', 'try3d-viewer' ) );
 		}
 
-		if ( ! swiftglb_move_file( $temporary, $dest_path ) ) {
+		if ( ! try3d_move_file( $temporary, $dest_path ) ) {
 			wp_delete_file( $temporary );
-			return new WP_Error( 'swiftglb_write', __( 'The file could not be saved.', 'swiftglb' ) );
+			return new WP_Error( 'try3d_write', __( 'The file could not be saved.', 'try3d-viewer' ) );
 		}
 
 		return true;
@@ -156,7 +159,7 @@ class SwiftGLB_Crypto implements SwiftGLB_Crypto_Interface {
 	public function read_plain_prefix( $file_path, $length ) {
 		$handle = fopen( $file_path, 'rb' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 		if ( ! $handle ) {
-			return new WP_Error( 'swiftglb_read', __( 'The file could not be read.', 'swiftglb' ) );
+			return new WP_Error( 'try3d_read', __( 'The file could not be read.', 'try3d-viewer' ) );
 		}
 		$header = $this->parse_header( $handle );
 		if ( is_wp_error( $header ) ) {
@@ -180,7 +183,7 @@ class SwiftGLB_Crypto implements SwiftGLB_Crypto_Interface {
 	public function parse_header( $handle ) {
 		$magic = $this->read_exact( $handle, 4 );
 		if ( is_wp_error( $magic ) || self::MAGIC !== $magic ) {
-			return new WP_Error( 'swiftglb_format', __( 'The file format was not recognized.', 'swiftglb' ) );
+			return new WP_Error( 'try3d_format', __( 'The file format was not recognized.', 'try3d-viewer' ) );
 		}
 
 		$version = $this->read_exact( $handle, 1 );
@@ -190,17 +193,17 @@ class SwiftGLB_Crypto implements SwiftGLB_Crypto_Interface {
 		$len_raw = $this->read_exact( $handle, 2 );
 
 		if ( is_wp_error( $version ) || is_wp_error( $flags ) || is_wp_error( $packed ) || is_wp_error( $iv ) || is_wp_error( $len_raw ) ) {
-			return new WP_Error( 'swiftglb_header', __( 'The file header is incomplete.', 'swiftglb' ) );
+			return new WP_Error( 'try3d_header', __( 'The file header is incomplete.', 'try3d-viewer' ) );
 		}
 
 		if ( ord( $version ) !== self::VERSION ) {
-			return new WP_Error( 'swiftglb_version', __( 'This file was made by a different plugin version.', 'swiftglb' ) );
+			return new WP_Error( 'try3d_version', __( 'This file was made by a different plugin version.', 'try3d-viewer' ) );
 		}
 
 		$size_unpacked = unpack( 'Vsize', $packed );
 		$name_len      = unpack( 'vlen', $len_raw );
 		if ( ! is_array( $size_unpacked ) || ! isset( $size_unpacked['size'] ) || ! is_array( $name_len ) || ! isset( $name_len['len'] ) ) {
-			return new WP_Error( 'swiftglb_unpack', __( 'The file header size could not be read.', 'swiftglb' ) );
+			return new WP_Error( 'try3d_unpack', __( 'The file header size could not be read.', 'try3d-viewer' ) );
 		}
 
 		$len  = (int) $name_len['len'];
@@ -231,7 +234,7 @@ class SwiftGLB_Crypto implements SwiftGLB_Crypto_Interface {
 	public function verify_payload( $handle, $iv, $size, $flags ) {
 		$start = ftell( $handle );
 		if ( false === $start ) {
-			return new WP_Error( 'swiftglb_read', __( 'The file could not be read.', 'swiftglb' ) );
+			return new WP_Error( 'try3d_read', __( 'The file could not be read.', 'try3d-viewer' ) );
 		}
 
 		if ( ( (int) $flags & self::FLAG_MAC ) !== self::FLAG_MAC ) {
@@ -240,7 +243,7 @@ class SwiftGLB_Crypto implements SwiftGLB_Crypto_Interface {
 
 		$context = hash_init( 'sha256', HASH_HMAC, $this->mac_key( $iv ) );
 		if ( false === $context ) {
-			return new WP_Error( 'swiftglb_key', __( 'The key could not be created.', 'swiftglb' ) );
+			return new WP_Error( 'try3d_key', __( 'The key could not be created.', 'try3d-viewer' ) );
 		}
 
 		$left = (int) $size;
@@ -258,7 +261,7 @@ class SwiftGLB_Crypto implements SwiftGLB_Crypto_Interface {
 
 		$expected = hash_final( $context, true );
 		if ( 0 !== $left || ! is_string( $stored ) || ! is_string( $expected ) || strlen( $stored ) !== strlen( $expected ) || ! hash_equals( $expected, $stored ) ) {
-			return new WP_Error( 'swiftglb_corrupt', __( 'The model file is damaged.', 'swiftglb' ) );
+			return new WP_Error( 'try3d_corrupt', __( 'The model file is damaged.', 'try3d-viewer' ) );
 		}
 
 		return true;
@@ -271,7 +274,7 @@ class SwiftGLB_Crypto implements SwiftGLB_Crypto_Interface {
 	public function verify_file( $file_path ) {
 		$handle = fopen( $file_path, 'rb' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 		if ( ! $handle ) {
-			return new WP_Error( 'swiftglb_read', __( 'The file could not be read.', 'swiftglb' ) );
+			return new WP_Error( 'try3d_read', __( 'The file could not be read.', 'try3d-viewer' ) );
 		}
 
 		$header = $this->parse_header( $handle );
@@ -309,7 +312,7 @@ class SwiftGLB_Crypto implements SwiftGLB_Crypto_Interface {
 
 		$key = hash( 'sha256', $this->get_secret() . $iv, true );
 		if ( ! is_string( $key ) || 32 !== strlen( $key ) ) {
-			return new WP_Error( 'swiftglb_key', __( 'The key could not be created.', 'swiftglb' ) );
+			return new WP_Error( 'try3d_key', __( 'The key could not be created.', 'try3d-viewer' ) );
 		}
 
 		$start_block = (int) intdiv( $offset, 32 );
@@ -341,7 +344,7 @@ class SwiftGLB_Crypto implements SwiftGLB_Crypto_Interface {
 			$buffer .= $read;
 		}
 		if ( strlen( $buffer ) !== $bytes ) {
-			return new WP_Error( 'swiftglb_short_read', __( 'The file ended before the expected size.', 'swiftglb' ) );
+			return new WP_Error( 'try3d_short_read', __( 'The file ended before the expected size.', 'try3d-viewer' ) );
 		}
 		return $buffer;
 	}

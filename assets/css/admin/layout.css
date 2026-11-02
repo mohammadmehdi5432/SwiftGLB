@@ -1,15 +1,15 @@
 /**
- * SwiftGLB Admin General Layout & Form Fields
+ * Try3D Admin General Layout & Form Fields
  * 
- * @package SwiftGLB
+ * @package Try3D
  */
 
-#woocommerce-product-data ul.wc-tabs li.swiftglb_options a::before {
+#woocommerce-product-data ul.wc-tabs li.try3d_options a::before {
 	content: "\f531";
 }
 
-.swiftglb-fields,
-.swiftglb-variation {
+.try3d-fields,
+.try3d-variation {
 	padding: 14px 18px 8px;
 	direction: ltr;
 	text-align: left;
@@ -18,7 +18,7 @@
 	box-sizing: border-box;
 }
 
-#woocommerce-product-data #swiftglb_product_data.woocommerce_options_panel {
+#woocommerce-product-data #try3d_product_data.woocommerce_options_panel {
 	box-sizing: border-box;
 	float: left;
 	width: 80%;
@@ -26,67 +26,67 @@
 	min-width: 0;
 }
 
-.swiftglb-lead,
-.swiftglb-note,
-.swiftglb-label,
-.swiftglb-check span {
+.try3d-lead,
+.try3d-note,
+.try3d-label,
+.try3d-check span {
 	overflow-wrap: anywhere;
 }
 
-.swiftglb-lead,
-.swiftglb-note {
+.try3d-lead,
+.try3d-note {
 	margin: 0 0 12px;
-	color: var(--swiftglb-admin-text-subtle, #646970);
+	color: var(--try3d-admin-text-subtle, #646970);
 	font-size: 12px;
 	line-height: 1.6;
 }
 
-.swiftglb-label {
+.try3d-label {
 	margin: 14px 0 6px;
 	font-weight: 600;
 	color: #1d2327;
 }
 
-.swiftglb-check {
+.try3d-check {
 	display: flex;
 	align-items: flex-start;
 	gap: 8px;
 	margin: 0 0 10px;
 }
 
-.swiftglb-check input[type="checkbox"] {
+.try3d-check input[type="checkbox"] {
 	margin-top: 2px;
-	border-radius: var(--swiftglb-admin-radius-sm, 4px);
+	border-radius: var(--try3d-admin-radius-sm, 4px);
 }
 
-.swiftglb-tint {
+.try3d-tint {
 	display: flex;
 	align-items: center;
 	gap: 10px;
 	margin-bottom: 12px;
 }
 
-.swiftglb-tint .swiftglb-check {
+.try3d-tint .try3d-check {
 	flex: 1;
 	margin: 0;
 }
 
-.swiftglb-tint input[type="color"] {
+.try3d-tint input[type="color"] {
 	padding: 0;
 	width: 44px;
 	height: 30px;
 	border: 1px solid #c3c4c7;
-	border-radius: var(--swiftglb-admin-radius-sm, 6px);
+	border-radius: var(--try3d-admin-radius-sm, 6px);
 	cursor: pointer;
 	background: none;
 }
 
-.swiftglb-shortcode {
+.try3d-shortcode {
 	width: min(280px, 100%);
 	font-family: Consolas, Monaco, monospace;
 	font-size: 12px;
 	background: #f6f7f7;
 	border: 1px solid #c3c4c7;
-	border-radius: var(--swiftglb-admin-radius-sm, 4px);
+	border-radius: var(--try3d-admin-radius-sm, 4px);
 	padding: 4px 8px;
 }

@@ -2,7 +2,7 @@
 /**
  * Storage service implementation.
  *
- * @package SwiftGLB
+ * @package Try3D
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,10 +10,10 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Manages physical files, directory permissions, and streaming.
  */
-class SwiftGLB_Storage_Service implements SwiftGLB_Storage_Interface {
+class Try3D_Storage_Service implements Try3D_Storage_Interface {
 
 	/**
-	 * @var SwiftGLB_Crypto_Interface
+	 * @var Try3D_Crypto_Interface
 	 */
 	private $crypto;
 
@@ -23,14 +23,14 @@ class SwiftGLB_Storage_Service implements SwiftGLB_Storage_Interface {
 	private $resolved_dir = null;
 
 	/**
-	 * @param SwiftGLB_Crypto_Interface $crypto Cryptographic service.
+	 * @param Try3D_Crypto_Interface $crypto Cryptographic service.
 	 */
-	public function __construct( SwiftGLB_Crypto_Interface $crypto ) {
+	public function __construct( Try3D_Crypto_Interface $crypto ) {
 		$this->crypto = $crypto;
 	}
 
 	/**
-	 * @return SwiftGLB_Crypto_Interface
+	 * @return Try3D_Crypto_Interface
 	 */
 	public function get_crypto() {
 		return $this->crypto;
@@ -52,7 +52,8 @@ class SwiftGLB_Storage_Service implements SwiftGLB_Storage_Interface {
 			return '';
 		}
 
-		$filtered = (string) apply_filters( 'swiftglb_private_dir', $legacy );
+		$filtered = (string) apply_filters( 'try3d_private_dir', $legacy );
+		$filtered = (string) apply_filters( 'swiftglb_private_dir', $filtered );
 		$filtered = (string) apply_filters( '3dsaz_private_dir', $filtered );
 		if ( $filtered !== $legacy ) {
 			$this->resolved_dir = $filtered;
@@ -104,7 +105,7 @@ class SwiftGLB_Storage_Service implements SwiftGLB_Storage_Interface {
 		if ( ! empty( $uploads['error'] ) ) {
 			return '';
 		}
-		return wp_normalize_path( trailingslashit( $uploads['basedir'] ) . 'swiftglb-private' );
+		return wp_normalize_path( trailingslashit( $uploads['basedir'] ) . 'try3d-private' );
 	}
 
 	/**
@@ -130,11 +131,11 @@ class SwiftGLB_Storage_Service implements SwiftGLB_Storage_Interface {
 		}
 
 		$blog_id = function_exists( 'get_current_blog_id' ) ? (int) get_current_blog_id() : 1;
-		return $parent . '/swiftglb-private/' . $blog_id;
+		return $parent . '/try3d-private/' . $blog_id;
 	}
 
 	/**
-	 * Folders used before the SwiftGLB rename.
+	 * Folders used before the Try3D rename.
 	 *
 	 * @return string[]
 	 */
@@ -142,6 +143,7 @@ class SwiftGLB_Storage_Service implements SwiftGLB_Storage_Interface {
 		$dirs = array();
 		$uploads = wp_upload_dir();
 		if ( empty( $uploads['error'] ) ) {
+			$dirs[] = wp_normalize_path( trailingslashit( $uploads['basedir'] ) . 'swiftglb-private' );
 			$dirs[] = wp_normalize_path( trailingslashit( $uploads['basedir'] ) . '3dsaz-private' );
 		}
 		if ( ! defined( 'ABSPATH' ) ) {
@@ -155,6 +157,7 @@ class SwiftGLB_Storage_Service implements SwiftGLB_Storage_Interface {
 		}
 
 		$blog_id = function_exists( 'get_current_blog_id' ) ? (int) get_current_blog_id() : 1;
+		$dirs[]  = $parent . '/swiftglb-private/' . $blog_id;
 		$dirs[]  = $parent . '/3dsaz-private/' . $blog_id;
 		return $dirs;
 	}
@@ -262,7 +265,7 @@ class SwiftGLB_Storage_Service implements SwiftGLB_Storage_Interface {
 	 * @return bool
 	 */
 	private function move_file( $from, $to ) {
-		return swiftglb_move_file( $from, $to );
+		return try3d_move_file( $from, $to );
 	}
 
 	/**
@@ -273,10 +276,10 @@ class SwiftGLB_Storage_Service implements SwiftGLB_Storage_Interface {
 	public function protect_directory() {
 		$dir = $this->get_dir();
 		if ( '' === $dir ) {
-			return new WP_Error( 'swiftglb_uploads', __( 'The WordPress uploads folder is not available.', 'swiftglb' ) );
+			return new WP_Error( 'try3d_uploads', __( 'The WordPress uploads folder is not available.', 'try3d-viewer' ) );
 		}
 		if ( ! wp_mkdir_p( $dir ) ) {
-			return new WP_Error( 'swiftglb_dir', __( 'The model folder could not be created.', 'swiftglb' ) );
+			return new WP_Error( 'try3d_dir', __( 'The model folder could not be created.', 'try3d-viewer' ) );
 		}
 
 		$htaccess = $dir . '/.htaccess';
@@ -319,7 +322,7 @@ class SwiftGLB_Storage_Service implements SwiftGLB_Storage_Interface {
 		if ( $max < 1 ) {
 			$max = 32 * MB_IN_BYTES;
 		}
-		$cap = (int) apply_filters( 'swiftglb_max_bytes', 80 * MB_IN_BYTES );
+		$cap = (int) apply_filters( 'try3d_max_bytes', 80 * MB_IN_BYTES );
 		if ( $cap < 1 ) {
 			$cap = 80 * MB_IN_BYTES;
 		}
@@ -387,12 +390,12 @@ class SwiftGLB_Storage_Service implements SwiftGLB_Storage_Interface {
 	 */
 	public function import_file( $source_path, $original_name ) {
 		if ( ! is_string( $source_path ) || ! is_readable( $source_path ) ) {
-			return new WP_Error( 'swiftglb_read', __( 'The file could not be read.', 'swiftglb' ) );
+			return new WP_Error( 'try3d_read', __( 'The file could not be read.', 'try3d-viewer' ) );
 		}
 
 		$size = filesize( $source_path );
 		if ( false === $size || $size < 12 || $size > $this->get_max_bytes() ) {
-			return new WP_Error( 'swiftglb_size', __( 'The file size is not allowed.', 'swiftglb' ) );
+			return new WP_Error( 'try3d_size', __( 'The file size is not allowed.', 'try3d-viewer' ) );
 		}
 
 		$ready = $this->protect_directory();
@@ -402,7 +405,7 @@ class SwiftGLB_Storage_Service implements SwiftGLB_Storage_Interface {
 
 		$handle = fopen( $source_path, 'rb' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 		if ( ! $handle ) {
-			return new WP_Error( 'swiftglb_read', __( 'The file could not be read.', 'swiftglb' ) );
+			return new WP_Error( 'try3d_read', __( 'The file could not be read.', 'try3d-viewer' ) );
 		}
 		$magic = fread( $handle, 4 ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fread
 		fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
@@ -410,29 +413,29 @@ class SwiftGLB_Storage_Service implements SwiftGLB_Storage_Interface {
 		$token = bin2hex( random_bytes( 16 ) );
 		$dest  = $this->get_path( $token );
 		if ( '' === $dest ) {
-			return new WP_Error( 'swiftglb_dir', __( 'The model folder is not valid.', 'swiftglb' ) );
+			return new WP_Error( 'try3d_dir', __( 'The model folder is not valid.', 'try3d-viewer' ) );
 		}
 
-		if ( SwiftGLB_Crypto::MAGIC === $magic ) {
+		if ( Try3D_Crypto::MAGIC === $magic ) {
 			$plain = $this->crypto->read_plain_prefix( $source_path, 4 );
 			if ( is_wp_error( $plain ) ) {
 				return $plain;
 			}
 			if ( 'glTF' !== $plain ) {
-				return new WP_Error( 'swiftglb_format', __( 'This protected file belongs to another site, or it is damaged.', 'swiftglb' ) );
+				return new WP_Error( 'try3d_format', __( 'This protected file belongs to another site, or it is damaged.', 'try3d-viewer' ) );
 			}
 			$verified = $this->crypto->verify_file( $source_path );
 			if ( is_wp_error( $verified ) ) {
 				return $verified;
 			}
 			if ( ! copy( $source_path, $dest ) ) {
-				return new WP_Error( 'swiftglb_write', __( 'The file could not be saved.', 'swiftglb' ) );
+				return new WP_Error( 'try3d_write', __( 'The file could not be saved.', 'try3d-viewer' ) );
 			}
 			return $token;
 		}
 
 		if ( 'glTF' !== $magic ) {
-			return new WP_Error( 'swiftglb_format', __( 'Only a GLB file, or a protected plugin file (.w3d or .bin), is accepted.', 'swiftglb' ) );
+			return new WP_Error( 'try3d_format', __( 'Only a GLB file, or a protected plugin file (.w3d or .bin), is accepted.', 'try3d-viewer' ) );
 		}
 
 		$encrypt_path = $source_path;
@@ -563,12 +566,12 @@ class SwiftGLB_Storage_Service implements SwiftGLB_Storage_Interface {
 	private function open_stored( $token ) {
 		$path = $this->get_path( $token );
 		if ( '' === $path || ! is_file( $path ) || ! $this->is_inside_storage( $path ) ) {
-			return new WP_Error( 'swiftglb_missing', __( 'Model not found.', 'swiftglb' ) );
+			return new WP_Error( 'try3d_missing', __( 'Model not found.', 'try3d-viewer' ) );
 		}
 
 		$handle = fopen( $path, 'rb' ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen
 		if ( ! $handle ) {
-			return new WP_Error( 'swiftglb_read', __( 'The model could not be read.', 'swiftglb' ) );
+			return new WP_Error( 'try3d_read', __( 'The model could not be read.', 'try3d-viewer' ) );
 		}
 
 		$header = $this->crypto->parse_header( $handle );
@@ -581,10 +584,10 @@ class SwiftGLB_Storage_Service implements SwiftGLB_Storage_Interface {
 		$file_size  = filesize( $path );
 		$flags      = isset( $header['flags'] ) ? (int) $header['flags'] : 0;
 		$remaining  = ( false === $payload_at || false === $file_size ) ? -1 : ( $file_size - $payload_at );
-		$needed     = (int) $header['size'] + ( ( $flags & SwiftGLB_Crypto::FLAG_MAC ) === SwiftGLB_Crypto::FLAG_MAC ? 32 : 0 );
+		$needed     = (int) $header['size'] + ( ( $flags & Try3D_Crypto::FLAG_MAC ) === Try3D_Crypto::FLAG_MAC ? 32 : 0 );
 		if ( $remaining < $needed || $header['size'] > $this->get_max_bytes() ) {
 			fclose( $handle ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
-			return new WP_Error( 'swiftglb_corrupt', __( 'The model file is damaged.', 'swiftglb' ) );
+			return new WP_Error( 'try3d_corrupt', __( 'The model file is damaged.', 'try3d-viewer' ) );
 		}
 
 		$verified = $this->crypto->verify_payload( $handle, $header['iv'], (int) $header['size'], $flags );
@@ -606,6 +609,7 @@ class SwiftGLB_Storage_Service implements SwiftGLB_Storage_Interface {
 		$name = wp_strip_all_tags( (string) get_bloginfo( 'name' ) );
 		$name = trim( (string) preg_replace( '/\s+/', ' ', $name ) );
 		$mark = trim( $name . ' ' . (string) home_url( '/' ) );
+		$mark = apply_filters( 'try3d_model_copyright', $mark );
 		$mark = apply_filters( 'swiftglb_model_copyright', $mark );
 		if ( ! is_string( $mark ) ) {
 			return '';
@@ -688,7 +692,7 @@ class SwiftGLB_Storage_Service implements SwiftGLB_Storage_Interface {
 		$updated .= str_repeat( ' ', $pad );
 		$rest_len = $declared_len - 20 - $chunk_len;
 		$new_total = 20 + strlen( $updated ) + $rest_len;
-		$temp      = wp_tempnam( 'swiftglb-stamp' );
+		$temp      = wp_tempnam( 'try3d-stamp' );
 		if ( ! is_string( $temp ) || '' === $temp ) {
 			fclose( $input ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose
 			return $source_path;

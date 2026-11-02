@@ -2,7 +2,7 @@
 /**
  * Frontend hook connectors.
  *
- * @package SwiftGLB
+ * @package Try3D
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,23 +10,23 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Connects frontend renderer and assets to WooCommerce and WordPress filters/actions.
  */
-class SwiftGLB_Frontend_Hooks {
+class Try3D_Frontend_Hooks {
 
 	/**
-	 * @var SwiftGLB_Frontend_Renderer
+	 * @var Try3D_Frontend_Renderer
 	 */
 	private $renderer;
 
 	/**
-	 * @var SwiftGLB_Frontend_Assets
+	 * @var Try3D_Frontend_Assets
 	 */
 	private $assets;
 
 	/**
-	 * @param SwiftGLB_Frontend_Renderer $renderer Renderer service.
-	 * @param SwiftGLB_Frontend_Assets   $assets   Assets service.
+	 * @param Try3D_Frontend_Renderer $renderer Renderer service.
+	 * @param Try3D_Frontend_Assets   $assets   Assets service.
 	 */
-	public function __construct( SwiftGLB_Frontend_Renderer $renderer, SwiftGLB_Frontend_Assets $assets ) {
+	public function __construct( Try3D_Frontend_Renderer $renderer, Try3D_Frontend_Assets $assets ) {
 		$this->renderer = $renderer;
 		$this->assets   = $assets;
 	}
@@ -41,6 +41,7 @@ class SwiftGLB_Frontend_Hooks {
 		add_action( 'woocommerce_before_single_product_summary', array( $this, 'on_photo_overlay' ), 25 );
 		add_action( 'woocommerce_single_product_summary', array( $this, 'on_summary' ), 25 );
 		add_filter( 'woocommerce_available_variation', array( $this, 'on_variation_payload' ), 10, 3 );
+		add_shortcode( 'try3d_viewer', array( $this, 'shortcode' ) );
 		add_shortcode( 'swiftglb_viewer', array( $this, 'shortcode' ) );
 		add_shortcode( 'woo_3d_viewer', array( $this, 'shortcode' ) );
 	}
@@ -53,7 +54,7 @@ class SwiftGLB_Frontend_Hooks {
 	public function on_enqueue_scripts() {
 		if ( ! is_product() ) {
 			global $post;
-			if ( ! $post || ( ! has_shortcode( $post->post_content, 'swiftglb_viewer' ) && ! has_shortcode( $post->post_content, 'woo_3d_viewer' ) ) ) {
+			if ( ! $post || ( ! has_shortcode( $post->post_content, 'try3d_viewer' ) && ! has_shortcode( $post->post_content, 'swiftglb_viewer' ) && ! has_shortcode( $post->post_content, 'woo_3d_viewer' ) ) ) {
 				return;
 			}
 		}
@@ -101,31 +102,31 @@ class SwiftGLB_Frontend_Hooks {
 	 * @return array<string,mixed>
 	 */
 	public function on_variation_payload( $data, $product, $variation ) {
-		$data['swiftglb_token']    = '';
-		$data['swiftglb_hd_token'] = '';
-		$data['swiftglb_color']    = '';
+		$data['try3d_token']    = '';
+		$data['try3d_hd_token'] = '';
+		$data['try3d_color']    = '';
 
-		if ( 'no' === get_post_meta( $product->get_id(), SwiftGLB_Model_Repository::META_ENABLED, true ) ) {
+		if ( 'no' === get_post_meta( $product->get_id(), Try3D_Model_Repository::META_ENABLED, true ) ) {
 			return $data;
 		}
 
-		$token    = (string) get_post_meta( $variation->get_id(), SwiftGLB_Model_Repository::META_TOKEN, true );
-		$hd_token = (string) get_post_meta( $variation->get_id(), SwiftGLB_Model_Repository::META_HD_TOKEN, true );
-		$color    = (string) get_post_meta( $variation->get_id(), SwiftGLB_Model_Repository::META_COLOR, true );
+		$token    = (string) get_post_meta( $variation->get_id(), Try3D_Model_Repository::META_TOKEN, true );
+		$hd_token = (string) get_post_meta( $variation->get_id(), Try3D_Model_Repository::META_HD_TOKEN, true );
+		$color    = (string) get_post_meta( $variation->get_id(), Try3D_Model_Repository::META_COLOR, true );
 
-		$storage = SwiftGLB_Container::get_instance()->get_storage();
+		$storage = Try3D_Container::get_instance()->get_storage();
 		if ( $storage->is_valid_token( $token ) && $storage->exists( $token ) ) {
-			$data['swiftglb_token'] = $token;
+			$data['try3d_token'] = $token;
 		}
 		if ( $storage->is_valid_token( $hd_token ) && $storage->exists( $hd_token ) ) {
-			$data['swiftglb_hd_token'] = $hd_token;
+			$data['try3d_hd_token'] = $hd_token;
 		}
-		if ( '' === $data['swiftglb_token'] && '' !== $data['swiftglb_hd_token'] ) {
-			$data['swiftglb_token']    = $data['swiftglb_hd_token'];
-			$data['swiftglb_hd_token'] = '';
+		if ( '' === $data['try3d_token'] && '' !== $data['try3d_hd_token'] ) {
+			$data['try3d_token']    = $data['try3d_hd_token'];
+			$data['try3d_hd_token'] = '';
 		}
 		if ( preg_match( '/^#[0-9a-fA-F]{6}$/', $color ) ) {
-			$data['swiftglb_color'] = $color;
+			$data['try3d_color'] = $color;
 		}
 
 		return $data;
@@ -137,14 +138,15 @@ class SwiftGLB_Frontend_Hooks {
 	 * @param array<string,mixed>|string $atts Shortcode attributes.
 	 * @return string
 	 */
-	public function shortcode( $atts ) {
+	public function shortcode( $atts, $content = '', $tag = '' ) {
+		unset( $content );
 		$args = shortcode_atts(
 			array(
 				'id'   => 0,
 				'mode' => 'inline',
 			),
 			$atts,
-			'swiftglb_viewer'
+			'' !== $tag ? $tag : 'try3d_viewer'
 		);
 
 		$product_id = absint( $args['id'] );

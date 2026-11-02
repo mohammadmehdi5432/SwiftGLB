@@ -1,8 +1,8 @@
 /**
- * SwiftGLB Admin Preview
+ * Try3D Admin Preview
  * Single Responsibility: Interactive 3D preview modal lifecycle within WordPress admin.
  * 
- * @package SwiftGLB
+ * @package Try3D
  */
 
 (function (root) {
@@ -39,25 +39,25 @@
 		}
 
 		var modal = document.createElement('div');
-		modal.className = 'swiftglb-admin-modal';
+		modal.className = 'try3d-admin-modal';
 		modal.hidden = true;
 		modal.innerHTML = ''
-			+ '<div class="swiftglb-admin-modal__backdrop"></div>'
-			+ '<div class="swiftglb-admin-modal__box">'
-			+ '  <div class="swiftglb-admin-modal__head">'
+			+ '<div class="try3d-admin-modal__backdrop"></div>'
+			+ '<div class="try3d-admin-modal__box">'
+			+ '  <div class="try3d-admin-modal__head">'
 			+ '    <h3>' + (this.config.previewTitle || '3D model preview') + '</h3>'
-			+ '    <button type="button" class="swiftglb-admin-modal__close">&times;</button>'
+			+ '    <button type="button" class="try3d-admin-modal__close">&times;</button>'
 			+ '  </div>'
-			+ '  <div class="swiftglb-admin-modal__body">'
-			+ '    <div class="swiftglb-admin-modal__loader">' + this.config.uploading + '</div>'
+			+ '  <div class="try3d-admin-modal__body">'
+			+ '    <div class="try3d-admin-modal__loader">' + this.config.uploading + '</div>'
 			+ '  </div>'
 			+ '</div>';
 
 		var self = this;
-		modal.querySelector('.swiftglb-admin-modal__close').addEventListener('click', function () {
+		modal.querySelector('.try3d-admin-modal__close').addEventListener('click', function () {
 			self.close();
 		});
-		modal.querySelector('.swiftglb-admin-modal__backdrop').addEventListener('click', function () {
+		modal.querySelector('.try3d-admin-modal__backdrop').addEventListener('click', function () {
 			self.close();
 		});
 
@@ -70,11 +70,11 @@
 		if (!token) return;
 
 		var modal = this.ensureModal();
-		var body = modal.querySelector('.swiftglb-admin-modal__body');
+		var body = modal.querySelector('.try3d-admin-modal__body');
 		modal.hidden = false;
-		body.innerHTML = '<div class="swiftglb-admin-modal__loader">Loading the model…</div>';
+		body.innerHTML = '<div class="try3d-admin-modal__loader">Loading the model…</div>';
 
-		var streamUrl = this.config.ajax + '?action=swiftglb_preview&nonce=' + encodeURIComponent(this.config.preview || '') + '&token=' + encodeURIComponent(token);
+		var streamUrl = this.config.ajax + '?action=try3d_preview&nonce=' + encodeURIComponent(this.config.preview || '') + '&token=' + encodeURIComponent(token);
 
 		this.loadViewerScript().then(function () {
 			body.innerHTML = '';
@@ -89,14 +89,14 @@
 			viewer.src = streamUrl;
 			body.appendChild(viewer);
 		}).catch(function () {
-			body.innerHTML = '<div class="swiftglb-admin-modal__loader" style="color:#d63638;">The preview could not be loaded.</div>';
+			body.innerHTML = '<div class="try3d-admin-modal__loader" style="color:#d63638;">The preview could not be loaded.</div>';
 		});
 	};
 
 	AdminPreview.prototype.close = function () {
 		if (this.modal) {
 			this.modal.hidden = true;
-			var body = this.modal.querySelector('.swiftglb-admin-modal__body');
+			var body = this.modal.querySelector('.try3d-admin-modal__body');
 			if (body) {
 				body.innerHTML = '';
 			}
@@ -107,5 +107,5 @@
 		return !!(this.modal && !this.modal.hidden);
 	};
 
-	root.SwiftGLB_AdminPreview = AdminPreview;
+	root.Try3D_AdminPreview = AdminPreview;
 }(typeof window !== 'undefined' ? window : this));

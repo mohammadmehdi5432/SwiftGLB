@@ -2,7 +2,7 @@
 /**
  * REST orchestrator & facade.
  *
- * @package SwiftGLB
+ * @package Try3D
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Connects REST & AJAX routes and delegates to specialized controller and validator components.
  */
-class SwiftGLB_REST {
+class Try3D_REST {
 
 	/**
 	 * Register REST and AJAX routes.
@@ -18,9 +18,11 @@ class SwiftGLB_REST {
 	 * @return void
 	 */
 	public static function init() {
-		$container = SwiftGLB_Container::get_instance();
+		$container = Try3D_Container::get_instance();
 
 		add_action( 'rest_api_init', array( $container->get_rest_controller(), 'register_routes' ) );
+		add_action( 'wp_ajax_try3d_model', array( $container->get_rest_controller(), 'serve_ajax_model' ) );
+		add_action( 'wp_ajax_nopriv_try3d_model', array( $container->get_rest_controller(), 'serve_ajax_model' ) );
 		add_action( 'wp_ajax_swiftglb_model', array( $container->get_rest_controller(), 'serve_ajax_model' ) );
 		add_action( 'wp_ajax_nopriv_swiftglb_model', array( $container->get_rest_controller(), 'serve_ajax_model' ) );
 	}
@@ -29,7 +31,7 @@ class SwiftGLB_REST {
 	 * @return void
 	 */
 	public static function register() {
-		SwiftGLB_Container::get_instance()->get_rest_controller()->register_routes();
+		Try3D_Container::get_instance()->get_rest_controller()->register_routes();
 	}
 
 	/**
@@ -37,14 +39,14 @@ class SwiftGLB_REST {
 	 * @return WP_Error|void
 	 */
 	public static function serve_model( WP_REST_Request $request ) {
-		return SwiftGLB_Container::get_instance()->get_rest_controller()->serve_rest_model( $request );
+		return Try3D_Container::get_instance()->get_rest_controller()->serve_rest_model( $request );
 	}
 
 	/**
 	 * @return void
 	 */
 	public static function ajax_model() {
-		SwiftGLB_Container::get_instance()->get_rest_controller()->serve_ajax_model();
+		Try3D_Container::get_instance()->get_rest_controller()->serve_ajax_model();
 	}
 
 	/**
@@ -54,7 +56,7 @@ class SwiftGLB_REST {
 	 * @return bool
 	 */
 	public static function can_read_token( $token, $product_id, $variation_id ) {
-		return SwiftGLB_Container::get_instance()->get_access_validator()->can_read_token( $token, $product_id, $variation_id );
+		return Try3D_Container::get_instance()->get_access_validator()->can_read_token( $token, $product_id, $variation_id );
 	}
 
 	/**
@@ -62,7 +64,7 @@ class SwiftGLB_REST {
 	 * @return bool
 	 */
 	public static function token_is_public( $token ) {
-		return SwiftGLB_Container::get_instance()->get_access_validator()->is_token_public( $token );
+		return Try3D_Container::get_instance()->get_access_validator()->is_token_public( $token );
 	}
 
 	/**
@@ -70,7 +72,7 @@ class SwiftGLB_REST {
 	 * @return bool
 	 */
 	public static function product_is_viewable( $product_id ) {
-		return SwiftGLB_Container::get_instance()->get_access_validator()->is_product_viewable( $product_id );
+		return Try3D_Container::get_instance()->get_access_validator()->is_product_viewable( $product_id );
 	}
 
 	/**
@@ -78,13 +80,13 @@ class SwiftGLB_REST {
 	 * @return bool
 	 */
 	public static function allow_signed_fetch( $product_id ) {
-		return SwiftGLB_Container::get_instance()->get_access_validator()->allow_signed_fetch( $product_id );
+		return Try3D_Container::get_instance()->get_access_validator()->allow_signed_fetch( $product_id );
 	}
 
 	/**
 	 * @return bool
 	 */
 	public static function has_rest_cookie() {
-		return SwiftGLB_Container::get_instance()->get_access_validator()->has_rest_cookie();
+		return Try3D_Container::get_instance()->get_access_validator()->has_rest_cookie();
 	}
 }

@@ -1,19 +1,19 @@
 /**
- * SwiftGLB Frontend Modal & Stage Layout
+ * Try3D Frontend Modal & Stage Layout
  * 
- * @package SwiftGLB
+ * @package Try3D
  */
 
-html.swiftglb-open,
-html.swiftglb-open body {
+html.try3d-open,
+html.try3d-open body {
 	overflow: hidden !important;
 	overscroll-behavior: none !important;
 }
 
-.swiftglb-modal {
+.try3d-modal {
 	position: fixed;
 	inset: 0;
-	z-index: var(--swiftglb-z-modal, 100000);
+	z-index: var(--try3d-z-modal, 100000);
 	display: block;
 	direction: ltr !important;
 	text-align: left;
@@ -22,27 +22,27 @@ html.swiftglb-open body {
 	user-select: none;
 }
 
-.swiftglb-modal[hidden] {
+.try3d-modal[hidden] {
 	display: none !important;
 }
 
-.swiftglb-modal__panel {
+.try3d-modal__panel {
 	position: relative;
 	width: 100%;
 	height: 100%;
-	background: var(--swiftglb-bg-light);
-	color: var(--swiftglb-text-light);
+	background: var(--try3d-bg-light);
+	color: var(--try3d-text-light);
 	direction: ltr !important;
-	transition: background-color var(--swiftglb-duration-normal) var(--swiftglb-ease-out),
-	            color var(--swiftglb-duration-normal) var(--swiftglb-ease-out);
+	transition: background-color var(--try3d-duration-normal) var(--try3d-ease-out),
+	            color var(--try3d-duration-normal) var(--try3d-ease-out);
 }
 
-.swiftglb-modal[data-scene="dark"] .swiftglb-modal__panel {
-	background: var(--swiftglb-bg-dark);
-	color: var(--swiftglb-text-dark);
+.try3d-modal[data-scene="dark"] .try3d-modal__panel {
+	background: var(--try3d-bg-dark);
+	color: var(--try3d-text-dark);
 }
 
-.swiftglb-stage {
+.try3d-stage {
 	position: absolute;
 	inset: 0;
 	display: flex;
@@ -50,14 +50,14 @@ html.swiftglb-open body {
 	justify-content: center;
 }
 
-.swiftglb-stage__viewer {
+.try3d-stage__viewer {
 	position: absolute;
 	inset: 0;
 	width: 100%;
 	height: 100%;
 }
 
-.swiftglb-stage__viewer model-viewer {
+.try3d-stage__viewer model-viewer {
 	width: 100%;
 	height: 100%;
 	outline: none;

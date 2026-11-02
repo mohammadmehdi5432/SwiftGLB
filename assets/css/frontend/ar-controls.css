@@ -1,15 +1,15 @@
 /**
- * SwiftGLB Frontend Augmented Reality (AR) & Desktop QR Card
+ * Try3D Frontend Augmented Reality (AR) & Desktop QR Card
  * 
- * @package SwiftGLB
+ * @package Try3D
  */
 
-.swiftglb-ar {
+.try3d-ar {
 	position: absolute;
 	bottom: max(24px, env(safe-area-inset-bottom));
 	left: 50%;
 	transform: translateX(-50%);
-	z-index: var(--swiftglb-z-topbar, 10);
+	z-index: var(--try3d-z-topbar, 10);
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -18,8 +18,8 @@
 	max-width: calc(100% - 32px);
 	padding: 13px 20px;
 	border: 0;
-	border-radius: var(--swiftglb-radius-pill, 9999px);
-	background: var(--swiftglb-primary, #2563eb);
+	border-radius: var(--try3d-radius-pill, 9999px);
+	background: var(--try3d-primary, #2563eb);
 	color: #ffffff;
 	font: inherit;
 	font-size: 15px;
@@ -27,66 +27,66 @@
 	line-height: 1;
 	white-space: nowrap;
 	cursor: pointer;
-	box-shadow: 0 8px 24px var(--swiftglb-primary-glow, rgba(37, 99, 235, 0.45));
+	box-shadow: 0 8px 24px var(--try3d-primary-glow, rgba(37, 99, 235, 0.45));
 	backdrop-filter: blur(16px);
 	-webkit-backdrop-filter: blur(16px);
-	transition: all var(--swiftglb-duration-fast) var(--swiftglb-ease-out);
+	transition: all var(--try3d-duration-fast) var(--try3d-ease-out);
 }
 
-.swiftglb-ar[hidden] {
+.try3d-ar[hidden] {
 	display: none !important;
 }
 
-.swiftglb-ar.is-attention {
-	animation: swiftglb-ar-pulse 1.1s ease-in-out 3;
+.try3d-ar.is-attention {
+	animation: try3d-ar-pulse 1.1s ease-in-out 3;
 }
 
-@keyframes swiftglb-ar-pulse {
+@keyframes try3d-ar-pulse {
 	50% {
 		transform: translateX(-50%) scale(1.06);
 	}
 }
 
-.swiftglb-ar:hover {
-	background: var(--swiftglb-primary-hover, #1d4ed8);
+.try3d-ar:hover {
+	background: var(--try3d-primary-hover, #1d4ed8);
 	transform: translateX(-50%) translateY(-2px);
 	box-shadow: 0 12px 28px rgba(37, 99, 235, 0.55);
 }
 
-.swiftglb-ar:disabled,
-.swiftglb-ar.is-waiting {
+.try3d-ar:disabled,
+.try3d-ar.is-waiting {
 	background: #9aa8bd;
 	color: #f8fafc;
 	box-shadow: none;
 	cursor: default;
 }
 
-.swiftglb-ar:disabled:hover,
-.swiftglb-ar.is-waiting:hover {
+.try3d-ar:disabled:hover,
+.try3d-ar.is-waiting:hover {
 	background: #9aa8bd;
 	transform: translateX(-50%);
 	box-shadow: none;
 }
 
-.swiftglb-ar span {
+.try3d-ar span {
 	white-space: nowrap;
 }
 
-.swiftglb-ar svg {
+.try3d-ar svg {
 	flex: 0 0 auto;
 	width: 22px;
 	height: 22px;
 }
 
-.swiftglb-stage__viewer model-viewer::part(default-ar-button) {
+.try3d-stage__viewer model-viewer::part(default-ar-button) {
 	display: none;
 }
 
 /* Desktop QR Code Card Modal */
-.swiftglb-qr-modal {
+.try3d-qr-modal {
 	position: absolute;
 	inset: 0;
-	z-index: var(--swiftglb-z-qr, 30);
+	z-index: var(--try3d-z-qr, 30);
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -96,7 +96,7 @@
 	padding: 20px;
 }
 
-.swiftglb-qr-link {
+.try3d-qr-link {
 	display: block;
 	margin-top: 12px;
 	font-size: 12px;
@@ -105,11 +105,11 @@
 	color: inherit;
 }
 
-.swiftglb-qr-modal[hidden] {
+.try3d-qr-modal[hidden] {
 	display: none !important;
 }
 
-.swiftglb-qr-card {
+.try3d-qr-card {
 	position: relative;
 	width: min(360px, 92vw);
 	padding: 28px 24px 24px;
@@ -119,15 +119,15 @@
 	box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
 	text-align: center;
 	direction: ltr;
-	animation: swiftglbCardPop 0.3s var(--swiftglb-ease-spring);
+	animation: try3dCardPop 0.3s var(--try3d-ease-spring);
 }
 
-.swiftglb-modal[data-scene="dark"] .swiftglb-qr-card {
+.try3d-modal[data-scene="dark"] .try3d-qr-card {
 	background: #171a1f;
 	color: #f5f6f8;
 }
 
-.swiftglb-qr-close {
+.try3d-qr-close {
 	position: absolute;
 	top: 12px;
 	right: 12px;
@@ -142,19 +142,19 @@
 	cursor: pointer;
 }
 
-.swiftglb-modal[data-scene="dark"] .swiftglb-qr-close {
+.try3d-modal[data-scene="dark"] .try3d-qr-close {
 	background: rgba(255, 255, 255, 0.08);
 	color: #f5f6f8;
 }
 
-.swiftglb-qr-title {
+.try3d-qr-title {
 	margin: 8px 28px 8px;
 	font-size: 18px;
 	font-weight: 700;
 	line-height: 1.35;
 }
 
-.swiftglb-qr-desc {
+.try3d-qr-desc {
 	margin: 0 auto 18px;
 	max-width: 28em;
 	font-size: 13.5px;
@@ -162,11 +162,11 @@
 	line-height: 1.55;
 }
 
-.swiftglb-modal[data-scene="dark"] .swiftglb-qr-desc {
+.try3d-modal[data-scene="dark"] .try3d-qr-desc {
 	color: #b7bdc7;
 }
 
-.swiftglb-qr-frame {
+.try3d-qr-frame {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -179,13 +179,13 @@
 	border: 1px solid rgba(28, 29, 33, 0.08);
 }
 
-.swiftglb-qr-canvas {
+.try3d-qr-canvas {
 	display: block;
 	width: min(220px, 68vw);
 	height: auto;
 }
 
-.swiftglb-qr-fallback {
+.try3d-qr-fallback {
 	display: block;
 	margin: 14px auto 0;
 	max-width: 100%;
@@ -197,6 +197,6 @@
 	text-underline-offset: 2px;
 }
 
-.swiftglb-qr-fallback[hidden] {
+.try3d-qr-fallback[hidden] {
 	display: none !important;
 }

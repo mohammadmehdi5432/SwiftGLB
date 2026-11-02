@@ -2,7 +2,7 @@
 /**
  * Storage service contract.
  *
- * @package SwiftGLB
+ * @package Try3D
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Interface for private 3D model filesystem storage.
  */
-interface SwiftGLB_Storage_Interface {
+interface Try3D_Storage_Interface {
 
 	/**
 	 * Private storage directory.

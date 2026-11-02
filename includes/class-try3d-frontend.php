@@ -2,7 +2,7 @@
 /**
  * Frontend orchestrator & facade.
  *
- * @package SwiftGLB
+ * @package Try3D
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Connects frontend hooks and delegates tasks to specialized frontend components.
  */
-class SwiftGLB_Frontend {
+class Try3D_Frontend {
 
 	/**
 	 * Register frontend hooks.
@@ -18,7 +18,7 @@ class SwiftGLB_Frontend {
 	 * @return void
 	 */
 	public static function init() {
-		SwiftGLB_Container::get_instance()->get_frontend_hooks()->register();
+		Try3D_Container::get_instance()->get_frontend_hooks()->register();
 	}
 
 	/**
@@ -27,7 +27,7 @@ class SwiftGLB_Frontend {
 	 * @return void
 	 */
 	public static function enqueue() {
-		SwiftGLB_Container::get_instance()->get_frontend_assets()->enqueue();
+		Try3D_Container::get_instance()->get_frontend_assets()->enqueue();
 	}
 
 	/**
@@ -37,7 +37,7 @@ class SwiftGLB_Frontend {
 	 * @return string
 	 */
 	public static function launcher_html( $product_id, $mode, $wait = false ) {
-		return SwiftGLB_Container::get_instance()->get_frontend_renderer()->render_launcher( $product_id, $mode, $wait );
+		return Try3D_Container::get_instance()->get_frontend_renderer()->render_launcher( $product_id, $mode, $wait );
 	}
 
 	/**
@@ -45,7 +45,7 @@ class SwiftGLB_Frontend {
 	 * @return bool
 	 */
 	public static function product_has_model( $product_id ) {
-		return SwiftGLB_Container::get_instance()->get_frontend_renderer()->has_model( $product_id );
+		return Try3D_Container::get_instance()->get_frontend_renderer()->has_model( $product_id );
 	}
 
 	/**
@@ -55,7 +55,7 @@ class SwiftGLB_Frontend {
 	 * @return array<string,mixed>
 	 */
 	public static function variation_payload( $data, $product, $variation ) {
-		return SwiftGLB_Container::get_instance()->get_frontend_hooks()->on_variation_payload( $data, $product, $variation );
+		return Try3D_Container::get_instance()->get_frontend_hooks()->on_variation_payload( $data, $product, $variation );
 	}
 
 	/**
@@ -63,6 +63,6 @@ class SwiftGLB_Frontend {
 	 * @return string
 	 */
 	public static function shortcode( $atts ) {
-		return SwiftGLB_Container::get_instance()->get_frontend_hooks()->shortcode( $atts );
+		return Try3D_Container::get_instance()->get_frontend_hooks()->shortcode( $atts );
 	}
 }

@@ -2,7 +2,7 @@
 /**
  * Cryptographic service contract.
  *
- * @package SwiftGLB
+ * @package Try3D
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Interface for obfuscating and parsing 3D model streams.
  */
-interface SwiftGLB_Crypto_Interface {
+interface Try3D_Crypto_Interface {
 
 	/**
 	 * Retrieve site secret used for XOR cipher.

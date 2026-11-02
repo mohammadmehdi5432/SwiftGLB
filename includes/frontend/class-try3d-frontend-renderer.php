@@ -2,7 +2,7 @@
 /**
  * Frontend launcher & variation markup renderer.
  *
- * @package SwiftGLB
+ * @package Try3D
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,17 +10,17 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Generates HTML markup for the 3D launcher and variation maps.
  */
-class SwiftGLB_Frontend_Renderer {
+class Try3D_Frontend_Renderer {
 
 	/**
-	 * @var SwiftGLB_Storage_Interface
+	 * @var Try3D_Storage_Interface
 	 */
 	private $storage;
 
 	/**
-	 * @param SwiftGLB_Storage_Interface $storage Storage service.
+	 * @param Try3D_Storage_Interface $storage Storage service.
 	 */
-	public function __construct( SwiftGLB_Storage_Interface $storage ) {
+	public function __construct( Try3D_Storage_Interface $storage ) {
 		$this->storage = $storage;
 	}
 
@@ -35,12 +35,12 @@ class SwiftGLB_Frontend_Renderer {
 			return false;
 		}
 
-		$token = (string) get_post_meta( $product_id, SwiftGLB_Model_Repository::META_TOKEN, true );
+		$token = (string) get_post_meta( $product_id, Try3D_Model_Repository::META_TOKEN, true );
 		if ( $this->storage->is_valid_token( $token ) && $this->storage->exists( $token ) ) {
 			return true;
 		}
 
-		$hd_token = (string) get_post_meta( $product_id, SwiftGLB_Model_Repository::META_HD_TOKEN, true );
+		$hd_token = (string) get_post_meta( $product_id, Try3D_Model_Repository::META_HD_TOKEN, true );
 		if ( $this->storage->is_valid_token( $hd_token ) && $this->storage->exists( $hd_token ) ) {
 			return true;
 		}
@@ -48,11 +48,11 @@ class SwiftGLB_Frontend_Renderer {
 		$product = wc_get_product( $product_id );
 		if ( $product && ( $product->is_type( 'variable' ) || $product->is_type( 'variable-subscription' ) ) ) {
 			foreach ( $product->get_children() as $child_id ) {
-				$child_token = (string) get_post_meta( $child_id, SwiftGLB_Model_Repository::META_TOKEN, true );
+				$child_token = (string) get_post_meta( $child_id, Try3D_Model_Repository::META_TOKEN, true );
 				if ( $this->storage->is_valid_token( $child_token ) && $this->storage->exists( $child_token ) ) {
 					return true;
 				}
-				$child_hd = (string) get_post_meta( $child_id, SwiftGLB_Model_Repository::META_HD_TOKEN, true );
+				$child_hd = (string) get_post_meta( $child_id, Try3D_Model_Repository::META_HD_TOKEN, true );
 				if ( $this->storage->is_valid_token( $child_hd ) && $this->storage->exists( $child_hd ) ) {
 					return true;
 				}
@@ -76,16 +76,16 @@ class SwiftGLB_Frontend_Renderer {
 			return '';
 		}
 
-		if ( 'no' === get_post_meta( $product_id, SwiftGLB_Model_Repository::META_ENABLED, true ) && ! current_user_can( 'edit_post', $product_id ) ) {
+		if ( 'no' === get_post_meta( $product_id, Try3D_Model_Repository::META_ENABLED, true ) && ! current_user_can( 'edit_post', $product_id ) ) {
 			return '';
 		}
 
-		$token = (string) get_post_meta( $product_id, SwiftGLB_Model_Repository::META_TOKEN, true );
+		$token = (string) get_post_meta( $product_id, Try3D_Model_Repository::META_TOKEN, true );
 		if ( ! $this->storage->is_valid_token( $token ) || ! $this->storage->exists( $token ) ) {
 			$token = '';
 		}
 
-		$hd_token = (string) get_post_meta( $product_id, SwiftGLB_Model_Repository::META_HD_TOKEN, true );
+		$hd_token = (string) get_post_meta( $product_id, Try3D_Model_Repository::META_HD_TOKEN, true );
 		if ( ! $this->storage->is_valid_token( $hd_token ) || ! $this->storage->exists( $hd_token ) ) {
 			$hd_token = '';
 		}
@@ -95,20 +95,20 @@ class SwiftGLB_Frontend_Renderer {
 			$hd_token = '';
 		}
 
-		$hd_auto     = 'yes' === get_post_meta( $product_id, SwiftGLB_Model_Repository::META_HD_AUTO, true ) ? '1' : '0';
+		$hd_auto     = 'yes' === get_post_meta( $product_id, Try3D_Model_Repository::META_HD_AUTO, true ) ? '1' : '0';
 		$image_id    = $product->get_image_id();
 		$poster      = $image_id ? wp_get_attachment_image_url( $image_id, 'woocommerce_single' ) : '';
 		$mode        = 'overlay' === $mode ? 'overlay' : 'inline';
-		$class       = 'swiftglb-launcher swiftglb-launcher--' . $mode;
+		$class       = 'try3d-launcher try3d-launcher--' . $mode;
 		if ( $wait ) {
-			$class .= ' swiftglb-launcher--wait';
+			$class .= ' try3d-launcher--wait';
 		}
 
-		$btn_text = (string) get_post_meta( $product_id, SwiftGLB_Model_Repository::META_BUTTON_TEXT, true );
+		$btn_text = (string) get_post_meta( $product_id, Try3D_Model_Repository::META_BUTTON_TEXT, true );
 		if ( '' === $btn_text ) {
-			$btn_text = __( 'View the 3D model', 'swiftglb' );
+			$btn_text = __( 'View the 3D model', 'try3d-viewer' );
 		}
-		$auto_rotate = 'yes' === get_post_meta( $product_id, SwiftGLB_Model_Repository::META_AUTO_ROTATE, true ) ? '1' : '0';
+		$auto_rotate = 'yes' === get_post_meta( $product_id, Try3D_Model_Repository::META_AUTO_ROTATE, true ) ? '1' : '0';
 
 		ob_start();
 		?>
@@ -117,17 +117,17 @@ class SwiftGLB_Frontend_Renderer {
 			data-token="<?php echo esc_attr( $token ); ?>"
 			data-hd-token="<?php echo esc_attr( $hd_token ); ?>"
 			data-hd-auto="<?php echo esc_attr( $hd_auto ); ?>"
-			data-orbit="<?php echo 'yes' === get_post_meta( $product_id, SwiftGLB_Model_Repository::META_ORBIT, true ) ? '1' : '0'; ?>"
-			data-fixed="<?php echo 'yes' === get_post_meta( $product_id, SwiftGLB_Model_Repository::META_AR_FIXED, true ) ? '1' : '0'; ?>"
+			data-orbit="<?php echo 'yes' === get_post_meta( $product_id, Try3D_Model_Repository::META_ORBIT, true ) ? '1' : '0'; ?>"
+			data-fixed="<?php echo 'yes' === get_post_meta( $product_id, Try3D_Model_Repository::META_AR_FIXED, true ) ? '1' : '0'; ?>"
 			data-autorotate="<?php echo esc_attr( $auto_rotate ); ?>"
 			data-poster="<?php echo esc_url( $poster ? $poster : '' ); ?>"
 			data-title="<?php echo esc_attr( $product->get_name() ); ?>"
 			<?php echo '' === $token ? 'hidden' : ''; ?>>
-			<button type="button" class="swiftglb-pill" aria-haspopup="dialog">
-				<svg class="swiftglb-pill__icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-				<span class="swiftglb-pill__text"><?php echo esc_html( $btn_text ); ?></span>
+			<button type="button" class="try3d-pill" aria-haspopup="dialog">
+				<svg class="try3d-pill__icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+				<span class="try3d-pill__text"><?php echo esc_html( $btn_text ); ?></span>
 			</button>
-			<script type="application/json" class="swiftglb-map"><?php echo wp_json_encode( $this->build_variation_map( $product ) ); ?></script>
+			<script type="application/json" class="try3d-map"><?php echo wp_json_encode( $this->build_variation_map( $product ) ); ?></script>
 		</div>
 		<?php
 		return (string) ob_get_clean();
@@ -151,9 +151,9 @@ class SwiftGLB_Frontend_Renderer {
 				continue;
 			}
 
-			$token    = (string) get_post_meta( $variation->get_id(), SwiftGLB_Model_Repository::META_TOKEN, true );
-			$hd_token = (string) get_post_meta( $variation->get_id(), SwiftGLB_Model_Repository::META_HD_TOKEN, true );
-			$color    = (string) get_post_meta( $variation->get_id(), SwiftGLB_Model_Repository::META_COLOR, true );
+			$token    = (string) get_post_meta( $variation->get_id(), Try3D_Model_Repository::META_TOKEN, true );
+			$hd_token = (string) get_post_meta( $variation->get_id(), Try3D_Model_Repository::META_HD_TOKEN, true );
+			$color    = (string) get_post_meta( $variation->get_id(), Try3D_Model_Repository::META_COLOR, true );
 
 			if ( ! $this->storage->is_valid_token( $token ) || ! $this->storage->exists( $token ) ) {
 				$token = '';

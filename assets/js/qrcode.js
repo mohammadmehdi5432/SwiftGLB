@@ -2,7 +2,7 @@
  * Local QR renderer for desktop AR handoff.
  * Byte mode, error correction M, versions 1–40.
  *
- * @package SwiftGLB
+ * @package Try3D
  */
 (function (root, factory) {
 	var api = factory();

@@ -2,7 +2,7 @@
 /**
  * Admin AJAX controller.
  *
- * @package SwiftGLB
+ * @package Try3D
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,17 +10,17 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Handles AJAX requests for admin file uploads and live 3D preview.
  */
-class SwiftGLB_Admin_Ajax {
+class Try3D_Admin_Ajax {
 
 	/**
-	 * @var SwiftGLB_Storage_Interface
+	 * @var Try3D_Storage_Interface
 	 */
 	private $storage;
 
 	/**
-	 * @param SwiftGLB_Storage_Interface $storage Storage service.
+	 * @param Try3D_Storage_Interface $storage Storage service.
 	 */
-	public function __construct( SwiftGLB_Storage_Interface $storage ) {
+	public function __construct( Try3D_Storage_Interface $storage ) {
 		$this->storage = $storage;
 	}
 
@@ -30,14 +30,14 @@ class SwiftGLB_Admin_Ajax {
 	 * @return void
 	 */
 	public function handle_upload() {
-		check_ajax_referer( 'swiftglb_upload', 'nonce' );
-		add_filter( 'wp_check_filetype_and_ext', array( 'SwiftGLB_Plugin', 'filetype' ), 10, 4 );
+		check_ajax_referer( 'try3d_upload', 'nonce' );
+		add_filter( 'wp_check_filetype_and_ext', array( 'Try3D_Plugin', 'filetype' ), 10, 4 );
 		if ( ! current_user_can( 'edit_products' ) ) {
-			wp_send_json_error( array( 'message' => __( 'You are not allowed to do this.', 'swiftglb' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'You are not allowed to do this.', 'try3d-viewer' ) ), 403 );
 		}
 
 		if ( empty( $_FILES['file'] ) || ! is_array( $_FILES['file'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-			wp_send_json_error( array( 'message' => __( 'No file was sent.', 'swiftglb' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'No file was sent.', 'try3d-viewer' ) ), 400 );
 		}
 
 		$file  = $_FILES['file']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
@@ -49,13 +49,13 @@ class SwiftGLB_Admin_Ajax {
 		$tmp  = isset( $file['tmp_name'] ) ? (string) $file['tmp_name'] : '';
 		$name = isset( $file['name'] ) ? sanitize_file_name( (string) $file['name'] ) : '';
 		if ( ! is_uploaded_file( $tmp ) ) {
-			wp_send_json_error( array( 'message' => __( 'The uploaded file is not valid.', 'swiftglb' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'The uploaded file is not valid.', 'try3d-viewer' ) ), 400 );
 		}
 
 		$checked = wp_check_filetype_and_ext( $tmp, $name );
 		$ext     = isset( $checked['ext'] ) ? strtolower( (string) $checked['ext'] ) : '';
 		if ( ! in_array( $ext, array( 'glb', 'w3d', 'bin' ), true ) ) {
-			wp_send_json_error( array( 'message' => __( 'This file extension is not allowed.', 'swiftglb' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'This file extension is not allowed.', 'try3d-viewer' ) ), 400 );
 		}
 
 		$upload = apply_filters(
@@ -69,7 +69,7 @@ class SwiftGLB_Admin_Ajax {
 			)
 		);
 		if ( ! empty( $upload['error'] ) ) {
-			$message = is_string( $upload['error'] ) ? $upload['error'] : __( 'The upload was rejected.', 'swiftglb' );
+			$message = is_string( $upload['error'] ) ? $upload['error'] : __( 'The upload was rejected.', 'try3d-viewer' );
 			wp_send_json_error( array( 'message' => $message ), 400 );
 		}
 
@@ -94,7 +94,7 @@ class SwiftGLB_Admin_Ajax {
 	 * @return void
 	 */
 	public function handle_preview() {
-		check_ajax_referer( 'swiftglb_preview', 'nonce' );
+		check_ajax_referer( 'try3d_preview', 'nonce' );
 		if ( ! current_user_can( 'edit_products' ) ) {
 			status_header( 403 );
 			exit;
@@ -131,11 +131,11 @@ class SwiftGLB_Admin_Ajax {
 	 */
 	private function upload_error_message( $code ) {
 		if ( UPLOAD_ERR_INI_SIZE === $code || UPLOAD_ERR_FORM_SIZE === $code ) {
-			return __( 'The file is larger than the server allows.', 'swiftglb' );
+			return __( 'The file is larger than the server allows.', 'try3d-viewer' );
 		}
 		if ( UPLOAD_ERR_PARTIAL === $code ) {
-			return __( 'The upload was incomplete. Try again.', 'swiftglb' );
+			return __( 'The upload was incomplete. Try again.', 'try3d-viewer' );
 		}
-		return __( 'The upload failed.', 'swiftglb' );
+		return __( 'The upload failed.', 'try3d-viewer' );
 	}
 }

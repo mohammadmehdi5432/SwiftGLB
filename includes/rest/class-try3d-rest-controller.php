@@ -2,7 +2,7 @@
 /**
  * REST & AJAX model delivery controller.
  *
- * @package SwiftGLB
+ * @package Try3D
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,23 +10,23 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Handles REST requests and AJAX streaming of protected 3D models.
  */
-class SwiftGLB_REST_Controller {
+class Try3D_REST_Controller {
 
 	/**
-	 * @var SwiftGLB_Storage_Interface
+	 * @var Try3D_Storage_Interface
 	 */
 	private $storage;
 
 	/**
-	 * @var SwiftGLB_Access_Validator
+	 * @var Try3D_Access_Validator
 	 */
 	private $validator;
 
 	/**
-	 * @param SwiftGLB_Storage_Interface $storage   Storage service.
-	 * @param SwiftGLB_Access_Validator  $validator Validator service.
+	 * @param Try3D_Storage_Interface $storage   Storage service.
+	 * @param Try3D_Access_Validator  $validator Validator service.
 	 */
-	public function __construct( SwiftGLB_Storage_Interface $storage, SwiftGLB_Access_Validator $validator ) {
+	public function __construct( Try3D_Storage_Interface $storage, Try3D_Access_Validator $validator ) {
 		$this->storage   = $storage;
 		$this->validator = $validator;
 	}
@@ -37,6 +37,21 @@ class SwiftGLB_REST_Controller {
 	 * @return void
 	 */
 	public function register_routes() {
+		register_rest_route(
+			'try3d/v1',
+			'/model/(?P<token>[a-f0-9]{32})',
+			array(
+				'methods'             => 'GET, POST',
+				'callback'            => array( $this, 'serve_rest_model' ),
+				'permission_callback' => '__return_true',
+				'args'                => array(
+					'token' => array(
+						'validate_callback' => array( $this->storage, 'is_valid_token' ),
+						'required'          => true,
+					),
+				),
+			)
+		);
 		register_rest_route(
 			'swiftglb/v1',
 			'/model/(?P<token>[a-f0-9]{32})',
@@ -63,17 +78,17 @@ class SwiftGLB_REST_Controller {
 	public function serve_rest_model( WP_REST_Request $request ) {
 		$token = (string) $request->get_param( 'token' );
 		if ( ! $this->storage->is_valid_token( $token ) || ! $this->storage->exists( $token ) ) {
-			return new WP_Error( 'swiftglb_missing', __( 'Model not found.', 'swiftglb' ), array( 'status' => 404 ) );
+			return new WP_Error( 'try3d_missing', __( 'Model not found.', 'try3d-viewer' ), array( 'status' => 404 ) );
 		}
 
 		$ids = $this->ids_from_request( $request );
 		if ( ! $this->is_authorized( $request, $token, $ids['product_id'], $ids['variation_id'] ) ) {
-			return new WP_Error( 'swiftglb_forbidden', __( 'You are not allowed to access this model.', 'swiftglb' ), array( 'status' => 403 ) );
+			return new WP_Error( 'try3d_forbidden', __( 'You are not allowed to access this model.', 'try3d-viewer' ), array( 'status' => 403 ) );
 		}
 
 		$meta = $this->storage->inspect( $token );
 		if ( is_wp_error( $meta ) ) {
-			return new WP_Error( 'swiftglb_corrupt', __( 'The model could not be read.', 'swiftglb' ), array( 'status' => 500 ) );
+			return new WP_Error( 'try3d_corrupt', __( 'The model could not be read.', 'try3d-viewer' ), array( 'status' => 500 ) );
 		}
 
 		$this->stream_model( $token, $meta, $ids['product_id'], $ids['variation_id'] );
@@ -129,8 +144,8 @@ class SwiftGLB_REST_Controller {
 		header( 'Content-Length: ' . (int) $meta['size'] );
 		if ( $product_id > 0 ) {
 			$ar_url = str_replace( array( "\r", "\n" ), '', $this->validator->signed_model_url( $token, $product_id, $variation_id ) );
-			header( 'X-SwiftGLB-AR-URL: ' . $ar_url );
-			header( 'Access-Control-Expose-Headers: X-SwiftGLB-AR-URL, Content-Length, Content-Type' );
+			header( 'X-Try3D-AR-URL: ' . $ar_url );
+			header( 'Access-Control-Expose-Headers: X-Try3D-AR-URL, Content-Length, Content-Type' );
 		}
 
 		while ( ob_get_level() > 0 ) {
@@ -156,7 +171,7 @@ class SwiftGLB_REST_Controller {
 
 		$nonce = (string) $request->get_header( 'x_wp_nonce' );
 		if ( '' === $nonce ) {
-			$nonce = (string) $request->get_header( 'x_swiftglb_nonce' );
+			$nonce = (string) $request->get_header( 'x_try3d_nonce' );
 		}
 		if ( '' === $nonce ) {
 			$nonce = sanitize_text_field( (string) $request->get_param( 'nonce' ) );
@@ -207,8 +222,10 @@ class SwiftGLB_REST_Controller {
 		if ( isset( $_GET['nonce'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			return sanitize_text_field( wp_unslash( $_GET['nonce'] ) );
 		}
-		if ( isset( $_SERVER['HTTP_X_3DSAZ_NONCE'] ) ) {
-			return sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_3DSAZ_NONCE'] ) );
+		foreach ( array( 'HTTP_X_TRY3D_NONCE', 'HTTP_X_SWIFTGLB_NONCE', 'HTTP_X_3DSAZ_NONCE' ) as $header ) {
+			if ( isset( $_SERVER[ $header ] ) ) {
+				return sanitize_text_field( wp_unslash( $_SERVER[ $header ] ) );
+			}
 		}
 		if ( isset( $_SERVER['HTTP_X_WP_NONCE'] ) ) {
 			return sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_WP_NONCE'] ) );
@@ -228,6 +245,6 @@ class SwiftGLB_REST_Controller {
 		if ( '' === $nonce ) {
 			return false;
 		}
-		return false !== wp_verify_nonce( $nonce, 'swiftglb_view' ) || false !== wp_verify_nonce( $nonce, 'wp_rest' );
+		return false !== wp_verify_nonce( $nonce, 'try3d_view' ) || false !== wp_verify_nonce( $nonce, 'swiftglb_view' ) || false !== wp_verify_nonce( $nonce, 'wp_rest' );
 	}
 }

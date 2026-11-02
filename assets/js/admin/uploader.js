@@ -1,14 +1,14 @@
 /**
- * SwiftGLB Admin Uploader
+ * Try3D Admin Uploader
  * Single Responsibility: Handling chunked progress file uploads and field assignments.
  * 
- * @package SwiftGLB
+ * @package Try3D
  */
 
 (function (root) {
 	'use strict';
 
-	var utils = root.SwiftGLB_AdminUtils;
+	var utils = root.Try3D_AdminUtils;
 
 	/**
 	 * @param {Object} config Admin configuration from wp_localize_script.
@@ -19,50 +19,50 @@
 	}
 
 	AdminUploader.prototype.setBusy = function (wrap, busy) {
-		var button = wrap.querySelector('.swiftglb-upload-btn');
+		var button = wrap.querySelector('.try3d-upload-btn');
 		if (!button) return;
 		button.disabled = busy;
 		button.textContent = busy ? this.config.uploading : this.config.upload;
 	};
 
 	AdminUploader.prototype.showError = function (wrap, message) {
-		var slot = wrap.querySelector('.swiftglb-file-error');
+		var slot = wrap.querySelector('.try3d-file-error');
 		if (slot) {
 			slot.textContent = message || '';
 		}
 	};
 
 	AdminUploader.prototype.getProgressElements = function (wrap) {
-		var prog = wrap.querySelector('.swiftglb-upload-progress');
+		var prog = wrap.querySelector('.try3d-upload-progress');
 		if (!prog) {
 			prog = document.createElement('div');
-			prog.className = 'swiftglb-upload-progress';
+			prog.className = 'try3d-upload-progress';
 			prog.innerHTML = ''
-				+ '<div class="swiftglb-upload-bar"><div class="swiftglb-upload-fill"></div></div>'
-				+ '<div class="swiftglb-upload-meta">'
-				+ '  <span class="swiftglb-upload-status">Uploading the file…</span>'
-				+ '  <div class="swiftglb-upload-numbers">'
-				+ '    <span class="swiftglb-upload-bytes"></span>'
-				+ '    <span class="swiftglb-upload-percent">0%</span>'
+				+ '<div class="try3d-upload-bar"><div class="try3d-upload-fill"></div></div>'
+				+ '<div class="try3d-upload-meta">'
+				+ '  <span class="try3d-upload-status">Uploading the file…</span>'
+				+ '  <div class="try3d-upload-numbers">'
+				+ '    <span class="try3d-upload-bytes"></span>'
+				+ '    <span class="try3d-upload-percent">0%</span>'
 				+ '  </div>'
 				+ '</div>';
 			wrap.appendChild(prog);
 		}
 		return {
 			wrap: prog,
-			fill: prog.querySelector('.swiftglb-upload-fill'),
-			status: prog.querySelector('.swiftglb-upload-status'),
-			bytes: prog.querySelector('.swiftglb-upload-bytes'),
-			percent: prog.querySelector('.swiftglb-upload-percent')
+			fill: prog.querySelector('.try3d-upload-fill'),
+			status: prog.querySelector('.try3d-upload-status'),
+			bytes: prog.querySelector('.try3d-upload-bytes'),
+			percent: prog.querySelector('.try3d-upload-percent')
 		};
 	};
 
 	AdminUploader.prototype.assignFile = function (wrap, payload) {
-		var token = wrap.querySelector('.swiftglb-token');
-		var filename = wrap.querySelector('.swiftglb-filename');
-		var label = wrap.querySelector('.swiftglb-file-name');
-		var remove = wrap.querySelector('.swiftglb-remove-btn');
-		var preview = wrap.querySelector('.swiftglb-preview-btn');
+		var token = wrap.querySelector('.try3d-token');
+		var filename = wrap.querySelector('.try3d-filename');
+		var label = wrap.querySelector('.try3d-file-name');
+		var remove = wrap.querySelector('.try3d-remove-btn');
+		var preview = wrap.querySelector('.try3d-preview-btn');
 
 		if (token) {
 			token.value = payload.token || '';
@@ -90,7 +90,7 @@
 
 		var self = this;
 		var ext = (file.name.split('.').pop() || '').toLowerCase();
-		var input = wrap.querySelector('.swiftglb-file-input');
+		var input = wrap.querySelector('.try3d-file-input');
 		if (['glb', 'w3d', 'bin'].indexOf(ext) === -1) {
 			if (input) {
 				input.value = '';
@@ -137,7 +137,7 @@
 
 		xhr.addEventListener('load', function () {
 			self.setBusy(wrap, false);
-			var input = wrap.querySelector('.swiftglb-file-input');
+			var input = wrap.querySelector('.try3d-file-input');
 			if (input) {
 				input.value = '';
 			}
@@ -168,11 +168,11 @@
 		});
 
 		var body = new FormData();
-		body.append('action', 'swiftglb_upload');
+		body.append('action', 'try3d_upload');
 		body.append('nonce', self.config.nonce);
 		body.append('file', file);
 		xhr.send(body);
 	};
 
-	root.SwiftGLB_AdminUploader = AdminUploader;
+	root.Try3D_AdminUploader = AdminUploader;
 }(typeof window !== 'undefined' ? window : this));

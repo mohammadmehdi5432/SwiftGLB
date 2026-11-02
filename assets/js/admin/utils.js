@@ -1,7 +1,7 @@
 /**
- * SwiftGLB Admin Utilities
+ * Try3D Admin Utilities
  * 
- * @package SwiftGLB
+ * @package Try3D
  */
 
 (function (root) {
@@ -32,15 +32,15 @@
 		},
 
 		/**
-		 * Find closest .swiftglb-file container.
+		 * Find closest .try3d-file container.
 		 * 
 		 * @param {Element} node Current DOM element.
 		 * @return {Element|null} Parent file container or null.
 		 */
 		closestFile: function (node) {
-			return node && node.closest ? node.closest('.swiftglb-file') : null;
+			return node && node.closest ? node.closest('.try3d-file') : null;
 		}
 	};
 
-	root.SwiftGLB_AdminUtils = AdminUtils;
+	root.Try3D_AdminUtils = AdminUtils;
 }(typeof window !== 'undefined' ? window : this));

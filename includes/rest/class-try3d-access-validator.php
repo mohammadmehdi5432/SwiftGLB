@@ -2,7 +2,7 @@
 /**
  * Model access validation service.
  *
- * @package SwiftGLB
+ * @package Try3D
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -10,25 +10,25 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Enforces permissions and viewability rules for 3D model access.
  */
-class SwiftGLB_Access_Validator {
+class Try3D_Access_Validator {
 
 	const SIGNATURE_TTL = 1800;
 
 	/**
-	 * @var SwiftGLB_Storage_Interface
+	 * @var Try3D_Storage_Interface
 	 */
 	private $storage;
 
 	/**
-	 * @var SwiftGLB_Model_Repository_Interface
+	 * @var Try3D_Model_Repository_Interface
 	 */
 	private $repository;
 
 	/**
-	 * @param SwiftGLB_Storage_Interface          $storage    Storage service.
-	 * @param SwiftGLB_Model_Repository_Interface $repository Repository service.
+	 * @param Try3D_Storage_Interface          $storage    Storage service.
+	 * @param Try3D_Model_Repository_Interface $repository Repository service.
 	 */
-	public function __construct( SwiftGLB_Storage_Interface $storage, SwiftGLB_Model_Repository_Interface $repository ) {
+	public function __construct( Try3D_Storage_Interface $storage, Try3D_Model_Repository_Interface $repository ) {
 		$this->storage    = $storage;
 		$this->repository = $repository;
 	}
@@ -46,16 +46,16 @@ class SwiftGLB_Access_Validator {
 			return false;
 		}
 
-		if ( 'no' === get_post_meta( $product_id, SwiftGLB_Model_Repository::META_ENABLED, true ) && ! current_user_can( 'edit_post', $product_id ) ) {
+		if ( 'no' === get_post_meta( $product_id, Try3D_Model_Repository::META_ENABLED, true ) && ! current_user_can( 'edit_post', $product_id ) ) {
 			return false;
 		}
 
-		$owns = (string) get_post_meta( $product_id, SwiftGLB_Model_Repository::META_TOKEN, true ) === $token
-			|| (string) get_post_meta( $product_id, SwiftGLB_Model_Repository::META_HD_TOKEN, true ) === $token;
+		$owns = (string) get_post_meta( $product_id, Try3D_Model_Repository::META_TOKEN, true ) === $token
+			|| (string) get_post_meta( $product_id, Try3D_Model_Repository::META_HD_TOKEN, true ) === $token;
 
 		if ( ! $owns && $variation_id > 0 && (int) wp_get_post_parent_id( $variation_id ) === $product_id ) {
-			$owns = (string) get_post_meta( $variation_id, SwiftGLB_Model_Repository::META_TOKEN, true ) === $token
-				|| (string) get_post_meta( $variation_id, SwiftGLB_Model_Repository::META_HD_TOKEN, true ) === $token;
+			$owns = (string) get_post_meta( $variation_id, Try3D_Model_Repository::META_TOKEN, true ) === $token
+				|| (string) get_post_meta( $variation_id, Try3D_Model_Repository::META_HD_TOKEN, true ) === $token;
 		}
 
 		if ( ! $owns ) {
@@ -75,7 +75,7 @@ class SwiftGLB_Access_Validator {
 		foreach ( $this->repository->get_post_ids_for_token( $token ) as $post_id ) {
 			$parent = (int) wp_get_post_parent_id( $post_id );
 			$target = $parent > 0 ? $parent : $post_id;
-			if ( 'no' === get_post_meta( $target, SwiftGLB_Model_Repository::META_ENABLED, true ) && ! current_user_can( 'edit_post', $target ) ) {
+			if ( 'no' === get_post_meta( $target, Try3D_Model_Repository::META_ENABLED, true ) && ! current_user_can( 'edit_post', $target ) ) {
 				continue;
 			}
 			if ( $this->is_product_viewable( $target ) ) {
@@ -154,7 +154,7 @@ class SwiftGLB_Access_Validator {
 				't'   => $time,
 				'sig' => $sig,
 			),
-			rest_url( 'swiftglb/v1/model/' . $token )
+			rest_url( 'try3d/v1/model/' . $token )
 		);
 	}
 

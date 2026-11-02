@@ -1,7 +1,7 @@
 (function () {
 	'use strict';
 
-	if (!window.swiftglb) {
+	if (!window.try3d) {
 		return;
 	}
 
@@ -14,7 +14,7 @@
 	var iconAr = '<svg viewBox="0 -960 960 960" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M440-181 240-296q-19-11-29.5-29T200-365v-230q0-22 10.5-40t29.5-29l200-115q19-11 40-11t40 11l200 115q19 11 29.5 29t10.5 40v230q0 22-10.5 40T720-296L520-181q-19 11-40 11t-40-11Zm0-92v-184l-160-93v185l160 92Zm80 0 160-92v-185l-160 93v184Z"/></svg>';
 	var iconQr = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>';
 
-	var config = window.swiftglb;
+	var config = window.try3d;
 	var modal = null;
 	var lastFocus = null;
 	var viewerPromise = null;
@@ -105,16 +105,16 @@
 	}
 
 	function boot() {
-		var launchers = document.querySelectorAll('.swiftglb-launcher');
+		var launchers = document.querySelectorAll('.try3d-launcher');
 		Array.prototype.forEach.call(launchers, prepareLauncher);
 		bindVariations();
 		watchForGallery();
 
-		if (window.location.search.indexOf('swiftglb_ar=1') !== -1 || window.location.hash.indexOf('swiftglb_ar') !== -1) {
+		if (window.location.search.indexOf('try3d_ar=1') !== -1 || window.location.hash.indexOf('try3d_ar') !== -1 || window.location.search.indexOf('swiftglb_ar=1') !== -1 || window.location.hash.indexOf('swiftglb_ar') !== -1) {
 			pendingAutoAr = true;
-			var nodes = document.querySelectorAll('.swiftglb-launcher');
+			var nodes = document.querySelectorAll('.try3d-launcher');
 			for (var i = 0; i < nodes.length; i++) {
-				if (!nodes[i].hidden && !nodes[i].classList.contains('swiftglb-launcher--suppressed')) {
+				if (!nodes[i].hidden && !nodes[i].classList.contains('try3d-launcher--suppressed')) {
 					open(nodes[i]);
 					break;
 				}
@@ -126,7 +126,7 @@
 		launcher.dataset.activeToken = launcher.dataset.token || '';
 		launcher.dataset.activeHdToken = launcher.dataset.hdToken || '';
 		launcher.dataset.posterOriginal = launcher.dataset.poster || '';
-		var mapNode = launcher.querySelector('.swiftglb-map');
+		var mapNode = launcher.querySelector('.try3d-map');
 		launcher._map = [];
 		launcher._picked = {};
 		if (mapNode) {
@@ -137,7 +137,7 @@
 			}
 		}
 		mount(launcher);
-		var button = launcher.querySelector('.swiftglb-pill');
+		var button = launcher.querySelector('.try3d-pill');
 		if (!button) {
 			return;
 		}
@@ -157,7 +157,7 @@
 			open(launcher);
 		});
 		if (mountedTwin(launcher)) {
-			launcher.classList.add('swiftglb-launcher--suppressed');
+			launcher.classList.add('try3d-launcher--suppressed');
 		}
 	}
 
@@ -166,7 +166,7 @@
 	}
 
 	function mountedTwin(launcher) {
-		var nodes = document.querySelectorAll('.swiftglb-launcher.is-mounted');
+		var nodes = document.querySelectorAll('.try3d-launcher.is-mounted');
 		for (var i = 0; i < nodes.length; i++) {
 			if (nodes[i] !== launcher && sameProduct(nodes[i], launcher)) {
 				return nodes[i];
@@ -176,10 +176,10 @@
 	}
 
 	function visibleTwin(launcher) {
-		var nodes = document.querySelectorAll('.swiftglb-launcher');
+		var nodes = document.querySelectorAll('.try3d-launcher');
 		for (var i = 0; i < nodes.length; i++) {
 			var other = nodes[i];
-			if (other === launcher || !sameProduct(other, launcher) || other.classList.contains('swiftglb-launcher--suppressed') || other.hidden) {
+			if (other === launcher || !sameProduct(other, launcher) || other.classList.contains('try3d-launcher--suppressed') || other.hidden) {
 				continue;
 			}
 			return other;
@@ -188,16 +188,16 @@
 	}
 
 	function suppressTwins(keeper) {
-		var nodes = document.querySelectorAll('.swiftglb-launcher');
+		var nodes = document.querySelectorAll('.try3d-launcher');
 		Array.prototype.forEach.call(nodes, function (other) {
 			if (other !== keeper && sameProduct(other, keeper)) {
-				other.classList.add('swiftglb-launcher--suppressed');
+				other.classList.add('try3d-launcher--suppressed');
 			}
 		});
 	}
 
 	function watchForGallery() {
-		if (!document.body || !document.querySelector('.swiftglb-launcher--overlay:not(.is-mounted)')) {
+		if (!document.body || !document.querySelector('.try3d-launcher--overlay:not(.is-mounted)')) {
 			return;
 		}
 		var scheduled = false;
@@ -208,9 +208,9 @@
 			scheduled = true;
 			window.requestAnimationFrame(function () {
 				scheduled = false;
-				var pending = document.querySelectorAll('.swiftglb-launcher--overlay:not(.is-mounted)');
+				var pending = document.querySelectorAll('.try3d-launcher--overlay:not(.is-mounted)');
 				Array.prototype.forEach.call(pending, mount);
-				if (!document.querySelector('.swiftglb-launcher--overlay:not(.is-mounted)')) {
+				if (!document.querySelector('.try3d-launcher--overlay:not(.is-mounted)')) {
 					observer.disconnect();
 				}
 			});
@@ -218,18 +218,18 @@
 		observer.observe(document.body, { childList: true, subtree: true });
 		window.setTimeout(function () {
 			observer.disconnect();
-			Array.prototype.forEach.call(document.querySelectorAll('.swiftglb-launcher--wait:not(.is-mounted)'), function (launcher) {
+			Array.prototype.forEach.call(document.querySelectorAll('.try3d-launcher--wait:not(.is-mounted)'), function (launcher) {
 				if (visibleTwin(launcher)) {
-					launcher.classList.add('swiftglb-launcher--suppressed');
+					launcher.classList.add('try3d-launcher--suppressed');
 				} else {
-					launcher.classList.remove('swiftglb-launcher--wait');
+					launcher.classList.remove('try3d-launcher--wait');
 				}
 			});
 		}, 8000);
 	}
 
 	function mount(launcher) {
-		if (!launcher.classList.contains('swiftglb-launcher--overlay')) {
+		if (!launcher.classList.contains('try3d-launcher--overlay')) {
 			return;
 		}
 		var root = launcher.closest('.product') || document;
@@ -261,7 +261,7 @@
 			return;
 		}
 		if (window.getComputedStyle(host).position === 'static') {
-			host.classList.add('swiftglb-gallery-host');
+			host.classList.add('try3d-gallery-host');
 		}
 		host.appendChild(launcher);
 		launcher.classList.add('is-mounted');
@@ -270,9 +270,9 @@
 
 	function launchersNear(form) {
 		var root = form.closest ? form.closest('.product') : null;
-		var list = root ? root.querySelectorAll('.swiftglb-launcher') : [];
+		var list = root ? root.querySelectorAll('.try3d-launcher') : [];
 		if (!list.length) {
-			list = document.querySelectorAll('.swiftglb-launcher');
+			list = document.querySelectorAll('.try3d-launcher');
 		}
 		return Array.prototype.slice.call(list);
 	}
@@ -281,12 +281,12 @@
 		if (window.jQuery) {
 			window.jQuery(document.body).on('found_variation', 'form.variations_form', function (event, variation) {
 				launchersNear(this).forEach(function (launcher) {
-					var token = (variation && variation.swiftglb_token) || launcher.dataset.token || '';
-					var hdToken = (variation && variation.swiftglb_hd_token) || launcher.dataset.hdToken || '';
+					var token = (variation && variation.try3d_token) || launcher.dataset.token || '';
+					var hdToken = (variation && variation.try3d_hd_token) || launcher.dataset.hdToken || '';
 					launcher.dataset.activeToken = token;
 					launcher.dataset.activeHdToken = hdToken;
 					launcher.dataset.variationId = variation && variation.variation_id ? String(variation.variation_id) : '';
-					launcher.dataset.color = (variation && variation.swiftglb_color) || '';
+					launcher.dataset.color = (variation && variation.try3d_color) || '';
 					if (variation && variation.image && variation.image.full_src) {
 						launcher.dataset.poster = variation.image.full_src;
 					}
@@ -324,7 +324,7 @@
 			if (!label || label.length > 80) {
 				return;
 			}
-			Array.prototype.forEach.call(document.querySelectorAll('.swiftglb-launcher'), function (launcher) {
+			Array.prototype.forEach.call(document.querySelectorAll('.try3d-launcher'), function (launcher) {
 				if (!launcher._map || !launcher._map.length) {
 					return;
 				}
@@ -341,7 +341,7 @@
 		if (!node || !node.closest) {
 			return false;
 		}
-		if (node.closest('.swiftglb-modal, .swiftglb-launcher, .swiftglb-qr-modal')) {
+		if (node.closest('.try3d-modal, .try3d-launcher, .try3d-qr-modal')) {
 			return false;
 		}
 		if (node.classList.contains('single_add_to_cart_button') || node.classList.contains('qty')) {
@@ -422,74 +422,74 @@
 			return modal;
 		}
 		modal = document.createElement('div');
-		modal.className = 'swiftglb-modal';
+		modal.className = 'try3d-modal';
 		modal.hidden = true;
 		modal.setAttribute('role', 'dialog');
 		modal.setAttribute('aria-modal', 'true');
 		modal.innerHTML = ''
-			+ '<div class="swiftglb-modal__panel">'
-			+ '  <div class="swiftglb-topbar">'
-			+ '    <button type="button" class="swiftglb-close" data-close="1" aria-label="' + config.i18n.close + '">&times;</button>'
-			+ '    <div class="swiftglb-toolbar" role="toolbar">'
-			+ '      <div class="swiftglb-switch" role="group" aria-label="' + config.i18n.day + ' / ' + config.i18n.night + '">'
+			+ '<div class="try3d-modal__panel">'
+			+ '  <div class="try3d-topbar">'
+			+ '    <button type="button" class="try3d-close" data-close="1" aria-label="' + config.i18n.close + '">&times;</button>'
+			+ '    <div class="try3d-toolbar" role="toolbar">'
+			+ '      <div class="try3d-switch" role="group" aria-label="' + config.i18n.day + ' / ' + config.i18n.night + '">'
 			+ '        <button type="button" data-scene="light" aria-label="' + config.i18n.day + '">' + iconSun + '</button>'
 			+ '        <button type="button" data-scene="dark" aria-label="' + config.i18n.night + '">' + iconMoon + '</button>'
 			+ '      </div>'
-			+ '      <button type="button" class="swiftglb-tool-btn swiftglb-tool-rotate" aria-label="' + (config.i18n.autoRotate || 'Rotate') + '">' + iconRotate + '</button>'
-			+ '      <button type="button" class="swiftglb-tool-btn swiftglb-tool-reset" aria-label="' + (config.i18n.resetView || 'Reset') + '">' + iconReset + '</button>'
-			+ '      <button type="button" class="swiftglb-tool-btn swiftglb-tool-snapshot" aria-label="' + (config.i18n.snapshot || 'Photo') + '">' + iconCamera + '</button>'
-			+ '      <button type="button" class="swiftglb-tool-btn swiftglb-tool-fullscreen" aria-label="' + (config.i18n.fullscreen || 'Full screen') + '">' + iconFullscreen + '</button>'
+			+ '      <button type="button" class="try3d-tool-btn try3d-tool-rotate" aria-label="' + (config.i18n.autoRotate || 'Rotate') + '">' + iconRotate + '</button>'
+			+ '      <button type="button" class="try3d-tool-btn try3d-tool-reset" aria-label="' + (config.i18n.resetView || 'Reset') + '">' + iconReset + '</button>'
+			+ '      <button type="button" class="try3d-tool-btn try3d-tool-snapshot" aria-label="' + (config.i18n.snapshot || 'Photo') + '">' + iconCamera + '</button>'
+			+ '      <button type="button" class="try3d-tool-btn try3d-tool-fullscreen" aria-label="' + (config.i18n.fullscreen || 'Full screen') + '">' + iconFullscreen + '</button>'
 			+ '    </div>'
 			+ '  </div>'
-			+ '  <div class="swiftglb-hd-status" hidden>'
-			+ '    <span class="swiftglb-hd-status__label"></span>'
-			+ '    <span class="swiftglb-hd-status__track" aria-hidden="true"><span class="swiftglb-hd-status__fill"></span></span>'
+			+ '  <div class="try3d-hd-status" hidden>'
+			+ '    <span class="try3d-hd-status__label"></span>'
+			+ '    <span class="try3d-hd-status__track" aria-hidden="true"><span class="try3d-hd-status__fill"></span></span>'
 			+ '  </div>'
-			+ '  <div class="swiftglb-stage">'
-			+ '    <div class="swiftglb-stage__viewer"></div>'
-			+ '    <div class="swiftglb-stage__loader">'
-			+ '      <div class="swiftglb-loader-card">'
-			+ '        <div class="swiftglb-loader-icon" aria-hidden="true">'
+			+ '  <div class="try3d-stage">'
+			+ '    <div class="try3d-stage__viewer"></div>'
+			+ '    <div class="try3d-stage__loader">'
+			+ '      <div class="try3d-loader-card">'
+			+ '        <div class="try3d-loader-icon" aria-hidden="true">'
 			+ '          <svg viewBox="0 0 64 64" width="44" height="44" fill="none">'
 			+ '            <path d="M32 6 L58 20 L32 34 L6 20 Z" fill="rgba(59, 130, 246, 0.22)" stroke="#3b82f6" stroke-width="2.5" stroke-linejoin="round"/>'
 			+ '            <path d="M6 20 L32 34 L32 58 L6 44 Z" fill="rgba(37, 99, 235, 0.38)" stroke="#2563eb" stroke-width="2.5" stroke-linejoin="round"/>'
 			+ '            <path d="M32 34 L58 20 L58 44 L32 58 Z" fill="rgba(29, 78, 216, 0.55)" stroke="#1d4ed8" stroke-width="2.5" stroke-linejoin="round"/>'
 			+ '          </svg>'
 			+ '        </div>'
-			+ '        <h4 class="swiftglb-loader-text"></h4>'
-			+ '        <div class="swiftglb-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="swiftglb-progress__bar"></span></div>'
-			+ '        <div class="swiftglb-loader-meta">'
-			+ '          <span class="swiftglb-loader-detail"></span>'
-			+ '          <span class="swiftglb-loader-percent">0%</span>'
+			+ '        <h4 class="try3d-loader-text"></h4>'
+			+ '        <div class="try3d-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span class="try3d-progress__bar"></span></div>'
+			+ '        <div class="try3d-loader-meta">'
+			+ '          <span class="try3d-loader-detail"></span>'
+			+ '          <span class="try3d-loader-percent">0%</span>'
 			+ '        </div>'
 			+ '      </div>'
 			+ '    </div>'
 			+ '  </div>'
-			+ '  <button type="button" class="swiftglb-ar" hidden></button>'
-			+ '  <div class="swiftglb-pop" hidden>'
-			+ '    <p class="swiftglb-pop__title"></p>'
-			+ '    <p class="swiftglb-pop__text"></p>'
-			+ '    <div class="swiftglb-pop__actions">'
-			+ '      <button type="button" class="swiftglb-retry" hidden></button>'
-			+ '      <button type="button" class="swiftglb-pop__ok" data-close="1"></button>'
+			+ '  <button type="button" class="try3d-ar" hidden></button>'
+			+ '  <div class="try3d-pop" hidden>'
+			+ '    <p class="try3d-pop__title"></p>'
+			+ '    <p class="try3d-pop__text"></p>'
+			+ '    <div class="try3d-pop__actions">'
+			+ '      <button type="button" class="try3d-retry" hidden></button>'
+			+ '      <button type="button" class="try3d-pop__ok" data-close="1"></button>'
 			+ '    </div>'
 			+ '  </div>'
-			+ '  <div class="swiftglb-qr-modal" hidden>'
-			+ '    <div class="swiftglb-qr-card">'
-			+ '      <button type="button" class="swiftglb-qr-close" aria-label="' + config.i18n.close + '">&times;</button>'
-			+ '      <h4 class="swiftglb-qr-title">' + (config.i18n.qrTitle || 'View in augmented reality') + '</h4>'
-			+ '      <p class="swiftglb-qr-desc">' + (config.i18n.qrDesc || 'Scan this code with your phone camera:') + '</p>'
-			+ '      <div class="swiftglb-qr-frame"></div>'
-			+ '      <a class="swiftglb-qr-fallback" hidden></a>'
+			+ '  <div class="try3d-qr-modal" hidden>'
+			+ '    <div class="try3d-qr-card">'
+			+ '      <button type="button" class="try3d-qr-close" aria-label="' + config.i18n.close + '">&times;</button>'
+			+ '      <h4 class="try3d-qr-title">' + (config.i18n.qrTitle || 'View in augmented reality') + '</h4>'
+			+ '      <p class="try3d-qr-desc">' + (config.i18n.qrDesc || 'Scan this code with your phone camera:') + '</p>'
+			+ '      <div class="try3d-qr-frame"></div>'
+			+ '      <a class="try3d-qr-fallback" hidden></a>'
 			+ '    </div>'
 			+ '  </div>'
 			+ '</div>';
 
-		var arButton = modal.querySelector('.swiftglb-ar');
+		var arButton = modal.querySelector('.try3d-ar');
 		arButton.innerHTML = (isMobileDevice() ? iconAr : iconQr) + '<span>' + config.i18n.ar + '</span>';
-		modal.querySelector('.swiftglb-loader-text').textContent = config.i18n.loadingModel || config.i18n.loading;
-		modal.querySelector('.swiftglb-retry').textContent = config.i18n.retry;
-		modal.querySelector('.swiftglb-pop__ok').textContent = config.i18n.dismiss;
+		modal.querySelector('.try3d-loader-text').textContent = config.i18n.loadingModel || config.i18n.loading;
+		modal.querySelector('.try3d-retry').textContent = config.i18n.retry;
+		modal.querySelector('.try3d-pop__ok').textContent = config.i18n.dismiss;
 
 		var isDark = document.documentElement.classList.contains('dark') || document.body.classList.contains('dark') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
 		modal.dataset.scene = isDark ? 'dark' : 'light';
@@ -507,21 +507,21 @@
 			}
 		});
 
-		modal.querySelector('.swiftglb-retry').addEventListener('click', function () {
+		modal.querySelector('.try3d-retry').addEventListener('click', function () {
 			if (modal._launcher) {
 				hideNotice();
 				load(configFrom(modal._launcher));
 			}
 		});
 
-		modal.querySelector('.swiftglb-ar').addEventListener('click', function () {
+		modal.querySelector('.try3d-ar').addEventListener('click', function () {
 			if (this.disabled || !modal || modal.dataset.arReady !== '1') {
 				return;
 			}
 			startAR();
 		});
 
-		modal.querySelector('.swiftglb-tool-rotate').addEventListener('click', function () {
+		modal.querySelector('.try3d-tool-rotate').addEventListener('click', function () {
 			var viewer = modal._viewer;
 			if (!viewer) return;
 			var rotating = viewer.hasAttribute('auto-rotate');
@@ -534,7 +534,7 @@
 			}
 		});
 
-		modal.querySelector('.swiftglb-tool-reset').addEventListener('click', function () {
+		modal.querySelector('.try3d-tool-reset').addEventListener('click', function () {
 			var viewer = modal._viewer;
 			if (!viewer) return;
 			viewer.cameraOrbit = '0deg 75deg 105%';
@@ -545,7 +545,7 @@
 			}
 		});
 
-		modal.querySelector('.swiftglb-tool-snapshot').addEventListener('click', function () {
+		modal.querySelector('.try3d-tool-snapshot').addEventListener('click', function () {
 			var viewer = modal._viewer;
 			if (!viewer || typeof viewer.toDataURL !== 'function') return;
 			try {
@@ -560,15 +560,15 @@
 			} catch (e) {}
 		});
 
-		modal.querySelector('.swiftglb-tool-fullscreen').addEventListener('click', function () {
+		modal.querySelector('.try3d-tool-fullscreen').addEventListener('click', function () {
 			toggleFullscreen();
 		});
 
-		modal.querySelector('.swiftglb-qr-close').addEventListener('click', function () {
-			modal.querySelector('.swiftglb-qr-modal').hidden = true;
+		modal.querySelector('.try3d-qr-close').addEventListener('click', function () {
+			modal.querySelector('.try3d-qr-modal').hidden = true;
 		});
 
-		modal.querySelector('.swiftglb-qr-modal').addEventListener('click', function (e) {
+		modal.querySelector('.try3d-qr-modal').addEventListener('click', function (e) {
 			if (e.target === this) {
 				this.hidden = true;
 			}
@@ -601,7 +601,7 @@
 		}
 		if (event.key === 'Escape') {
 			event.preventDefault();
-			var qr = modal.querySelector('.swiftglb-qr-modal');
+			var qr = modal.querySelector('.try3d-qr-modal');
 			if (qr && !qr.hidden) {
 				qr.hidden = true;
 				return;
@@ -637,9 +637,9 @@
 		modal.hidden = false;
 		modal.setAttribute('aria-label', cfg.title || config.i18n.day);
 		hideNotice();
-		document.documentElement.classList.add('swiftglb-open');
+		document.documentElement.classList.add('try3d-open');
 		lastFocus = document.activeElement;
-		modal.querySelector('.swiftglb-close').focus();
+		modal.querySelector('.try3d-close').focus();
 		if (!canRender3D()) {
 			pendingAutoAr = false;
 			showNotice('unsupported');
@@ -647,7 +647,7 @@
 		}
 		if ((modal.dataset.token === cfg.token || modal.dataset.baseToken === cfg.token) && modal._viewer && modal.dataset.currentQuality !== 'failed') {
 			applyScene(modal._viewer, cfg);
-			modal.querySelector('.swiftglb-stage').classList.add('is-ready');
+			modal.querySelector('.try3d-stage').classList.add('is-ready');
 			modal.dataset.sdReady = '1';
 			maybeEnableAr();
 			continueAutoAr();
@@ -678,7 +678,7 @@
 		}
 		modal.hidden = true;
 		setHdStatus(false);
-		document.documentElement.classList.remove('swiftglb-open');
+		document.documentElement.classList.remove('try3d-open');
 		if (document.fullscreenElement || document.webkitFullscreenElement) {
 			if (document.exitFullscreen) {
 				document.exitFullscreen();
@@ -693,9 +693,9 @@
 
 	function load(cfg) {
 		var serial = ++requestSerial;
-		var stage = modal.querySelector('.swiftglb-stage');
-		var text = modal.querySelector('.swiftglb-loader-text');
-		var ar = modal.querySelector('.swiftglb-ar');
+		var stage = modal.querySelector('.try3d-stage');
+		var text = modal.querySelector('.try3d-loader-text');
+		var ar = modal.querySelector('.try3d-ar');
 		stage.classList.remove('is-ready', 'is-error');
 		hideNotice();
 		setHdStatus(false);
@@ -743,7 +743,7 @@
 		}
 		modal._hdHooked = '';
 
-		var rotBtn = modal.querySelector('.swiftglb-tool-rotate');
+		var rotBtn = modal.querySelector('.try3d-tool-rotate');
 		if (rotBtn) {
 			rotBtn.classList.toggle('is-on', !!cfg.autorotate);
 		}
@@ -795,7 +795,7 @@
 				viewer.setAttribute('auto-rotate', '');
 				viewer.setAttribute('auto-rotate-delay', '800');
 				viewer.setAttribute('rotation-per-second', '25deg');
-				var rotBtn = modal.querySelector('.swiftglb-tool-rotate');
+				var rotBtn = modal.querySelector('.try3d-tool-rotate');
 				if (rotBtn) rotBtn.classList.add('is-on');
 			}
 
@@ -810,8 +810,8 @@
 				if (serial !== requestSerial) {
 					return;
 				}
-				var first = viewer.dataset.swiftglbBooted !== '1';
-				viewer.dataset.swiftglbBooted = '1';
+				var first = viewer.dataset.try3dBooted !== '1';
+				viewer.dataset.try3dBooted = '1';
 				applyColor(viewer, modal._launcher ? configFrom(modal._launcher).color : cfg.color);
 				applySceneLook(viewer);
 				stage.classList.add('is-ready');
@@ -843,7 +843,7 @@
 				if (serial !== requestSerial) {
 					return;
 				}
-				if (viewer.dataset.swiftglbBooted === '1' && cfg.hdToken && modal.dataset.token === cfg.hdToken) {
+				if (viewer.dataset.try3dBooted === '1' && cfg.hdToken && modal.dataset.token === cfg.hdToken) {
 					var sdEntry = models[cfg.token];
 					modal.dataset.currentQuality = 'sd';
 					modal.dataset.token = cfg.token;
@@ -882,7 +882,7 @@
 				viewer.src = url;
 			});
 
-			modal.querySelector('.swiftglb-stage__viewer').appendChild(viewer);
+			modal.querySelector('.try3d-stage__viewer').appendChild(viewer);
 			modal._viewer = viewer;
 			modal.dataset.token = cfg.token;
 			modal.dataset.blobUrl = blobUrlFor(downloaded);
@@ -933,10 +933,10 @@
 		if (!modal) {
 			return;
 		}
-		var pop = modal.querySelector('.swiftglb-pop');
-		var title = modal.querySelector('.swiftglb-pop__title');
-		var text = modal.querySelector('.swiftglb-pop__text');
-		var retry = modal.querySelector('.swiftglb-retry');
+		var pop = modal.querySelector('.try3d-pop');
+		var title = modal.querySelector('.try3d-pop__title');
+		var text = modal.querySelector('.try3d-pop__text');
+		var retry = modal.querySelector('.try3d-retry');
 		if (kind === 'ar-unsupported') {
 			title.textContent = config.i18n.arUnsupportedTitle || config.i18n.unsupportedTitle;
 			text.textContent = config.i18n.arUnsupported || config.i18n.unsupported;
@@ -954,14 +954,14 @@
 	}
 
 	function hideNotice() {
-		var pop = modal && modal.querySelector('.swiftglb-pop');
+		var pop = modal && modal.querySelector('.try3d-pop');
 		if (pop) {
 			pop.hidden = true;
 		}
 	}
 
 	function markScene(mode) {
-		Array.prototype.forEach.call(modal.querySelectorAll('.swiftglb-switch [data-scene]'), function (button) {
+		Array.prototype.forEach.call(modal.querySelectorAll('.try3d-switch [data-scene]'), function (button) {
 			var on = button.getAttribute('data-scene') === mode;
 			button.classList.toggle('is-on', on);
 			button.setAttribute('aria-pressed', on ? 'true' : 'false');
@@ -1003,13 +1003,13 @@
 		if (!modal) {
 			return;
 		}
-		var status = modal.querySelector('.swiftglb-hd-status');
+		var status = modal.querySelector('.try3d-hd-status');
 		if (!status) {
 			return;
 		}
 		status.hidden = !visible;
-		var text = status.querySelector('.swiftglb-hd-status__label');
-		var fill = status.querySelector('.swiftglb-hd-status__fill');
+		var text = status.querySelector('.try3d-hd-status__label');
+		var fill = status.querySelector('.try3d-hd-status__fill');
 		if (text && label) {
 			text.textContent = label;
 		}
@@ -1019,7 +1019,7 @@
 	}
 
 	function setArReady(ready) {
-		var ar = modal && modal.querySelector('.swiftglb-ar');
+		var ar = modal && modal.querySelector('.try3d-ar');
 		if (!modal || !ar) {
 			return;
 		}
@@ -1155,7 +1155,7 @@
 		}
 		var url = useAjax ? new URL(config.ajax, window.location.href) : new URL(config.rest + cfg.token, window.location.href);
 		if (useAjax) {
-			url.searchParams.set('action', 'swiftglb_model');
+			url.searchParams.set('action', 'try3d_model');
 			url.searchParams.set('token', cfg.token);
 			url.searchParams.set('nonce', config.view);
 		}
@@ -1171,14 +1171,14 @@
 			credentials: 'same-origin',
 			headers: {
 				'X-WP-Nonce': config.nonce,
-				'X-SwiftGLB-Nonce': config.view
+				'X-Try3D-Nonce': config.view
 			}
 		}).then(function (response) {
 			var type = response.headers.get('Content-Type') || '';
 			if (!response.ok || type.indexOf('json') !== -1) {
 				throw new Error('model');
 			}
-			var arUrl = response.headers.get('X-SwiftGLB-AR-URL') || '';
+			var arUrl = response.headers.get('X-Try3D-AR-URL') || '';
 			if (headersOnly) {
 				if (response.body && typeof response.body.cancel === 'function') {
 					response.body.cancel();
@@ -1331,7 +1331,7 @@
 			return;
 		}
 		pendingAutoAr = false;
-		var ar = modal.querySelector('.swiftglb-ar');
+		var ar = modal.querySelector('.try3d-ar');
 		if (ar) {
 			ar.hidden = false;
 			ar.classList.add('is-attention');
@@ -1377,18 +1377,18 @@
 	}
 
 	function showDesktopQr() {
-		var qrModal = modal && modal.querySelector('.swiftglb-qr-modal');
-		var frame = modal && modal.querySelector('.swiftglb-qr-frame');
+		var qrModal = modal && modal.querySelector('.try3d-qr-modal');
+		var frame = modal && modal.querySelector('.try3d-qr-frame');
 		if (!qrModal || !frame) return;
 
 		var targetUrl = window.location.href;
 		if (targetUrl.indexOf('#') !== -1) {
 			targetUrl = targetUrl.split('#')[0];
 		}
-		targetUrl += (targetUrl.indexOf('?') === -1 ? '?' : '&') + 'swiftglb_ar=1';
+		targetUrl += (targetUrl.indexOf('?') === -1 ? '?' : '&') + 'try3d_ar=1';
 
 		var generation = ++qrSerial;
-		var fallback = modal.querySelector('.swiftglb-qr-fallback');
+		var fallback = modal.querySelector('.try3d-qr-fallback');
 		frame.textContent = '';
 		if (fallback) {
 			fallback.hidden = true;
@@ -1410,7 +1410,7 @@
 			}
 			frame.textContent = '';
 			var canvas = document.createElement('canvas');
-			canvas.className = 'swiftglb-qr-canvas';
+			canvas.className = 'try3d-qr-canvas';
 			if (window.Saz3dQr && window.Saz3dQr.draw(canvas, targetUrl)) {
 				frame.appendChild(canvas);
 				return;
@@ -1454,11 +1454,11 @@
 			return;
 		}
 		var amount = Math.max(0, Math.min(100, Math.round(value || 0)));
-		var bar = modal.querySelector('.swiftglb-progress');
-		var fill = modal.querySelector('.swiftglb-progress__bar');
-		var percent = modal.querySelector('.swiftglb-loader-percent');
-		var detail = modal.querySelector('.swiftglb-loader-detail');
-		var text = modal.querySelector('.swiftglb-loader-text');
+		var bar = modal.querySelector('.try3d-progress');
+		var fill = modal.querySelector('.try3d-progress__bar');
+		var percent = modal.querySelector('.try3d-loader-percent');
+		var detail = modal.querySelector('.try3d-loader-detail');
+		var text = modal.querySelector('.try3d-loader-text');
 
 		if (bar) {
 			bar.setAttribute('aria-valuenow', String(amount));
